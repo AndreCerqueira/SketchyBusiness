@@ -60,6 +60,20 @@ namespace Project.Runtime.Scripts.Interaction
             if (_playerController != null)
                 PlayerCollider = _playerController.GetComponent<Collider>();
         }
+        
+        private void OnEnable()
+        {
+            if (_interactActionInput == null) return;
+            
+            _interactActionInput.action.Enable();
+        }
+
+        private void OnDisable()
+        {
+            if (_interactActionInput == null) return;
+            
+            _interactActionInput.action.Disable();
+        }
 
         private void Update()
         {

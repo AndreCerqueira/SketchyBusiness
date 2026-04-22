@@ -8,6 +8,7 @@
         Open,
         Close,
         Inspect,
-        StopInspect
+        StopInspect,
+        Press
     }
 }

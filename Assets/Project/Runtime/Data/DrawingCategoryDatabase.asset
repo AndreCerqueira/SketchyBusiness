@@ -1,0 +1,75 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8277de1b7a9e48eda062fddcb6f6f875, type: 3}
+  m_Name: DrawingCategoryDatabase
+  m_EditorClassIdentifier: Assembly-CSharp::Project.Runtime.Scripts.Data.DrawingCategoryDatabaseSO
+  _categories:
+  - CategoryName: Animals
+    Words:
+    - Cat
+    - Dog
+    - Elephant
+    - Giraffe
+    - Bird
+    - Lion
+    - Snake
+    - Fish
+    - Frog
+    - Butterfly
+  - CategoryName: Vehicles
+    Words:
+    - Car
+    - Airplane
+    - Boat
+    - Bicycle
+    - Train
+    - Helicopter
+    - Submarine
+    - Truck
+    - Motorcycle
+    - Rocket
+  - CategoryName: Household Objects
+    Words:
+    - Chair
+    - Table
+    - Lamp
+    - Television
+    - Bed
+    - Sofa
+    - Refrigerator
+    - Fork
+    - Knife
+    - Glass
+  - CategoryName: Nature
+    Words:
+    - Tree
+    - Flower
+    - Mountain
+    - Sun
+    - Cloud
+    - Star
+    - Moon
+    - River
+    - Fire
+    - Leaf
+  - CategoryName: Professions
+    Words:
+    - Doctor
+    - Police Officer
+    - Firefighter
+    - Teacher
+    - Astronaut
+    - Painter
+    - Chef
+    - Mail Carrier
+    - Judge
+    - Mechanic

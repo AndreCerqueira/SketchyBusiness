@@ -1,7 +1,7 @@
 ﻿using Project.Runtime.Scripts.Interaction.Interactables;
 using UnityEngine;
 
-namespace Project.Runtime.Scripts
+namespace Project.Runtime.Scripts.Actions
 {
     [RequireComponent(typeof(ButtonInteractable))]
     public class PaperClearAction : MonoBehaviour

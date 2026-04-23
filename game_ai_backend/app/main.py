@@ -6,6 +6,7 @@ app = FastAPI(title="Teste de Ligacao")
 
 class ImageRequest(BaseModel):
     ImageBase64: str
+    Topic: str
 
 @app.get("/hello-test")
 def hello_test():
@@ -13,32 +14,34 @@ def hello_test():
 
 @app.post("/analyze-drawing")
 def analyze_drawing(request: ImageRequest):
-    print("Recebi um pedido do Unity!")
-    print(f"Tamanho da imagem recebida: {len(request.ImageBase64)} caracteres")
-    
+    prompt = (
+        f"Atua como um jogador num jogo de adivinhas tipo Pictionary. "
+        f"A imagem é apenas um simples rabisco ou esboço feito com traços pretos num fundo branco. "
+        f"O tema do desenho é '{request.Topic}'. "
+        f"Regras: "
+        f"1. Não menciones cores, tipos de linha, fundos ou o facto de ser um desenho. "
+        f"2. Foca-te puramente em adivinhar qual é a coisa dentro do tema '{request.Topic}' que aquelas linhas formam. "
+        f"3. Responde de forma muito curta e direta, em inglês. "
+        f"Diz-me apenas o que achas que o jogador tentou desenhar."
+    )
+
     try:
-        # Pede ao Ollama (modelo LLaVA) para analisar a imagem
         print("A processar a imagem com o LLaVA. Aguarda...")
-        
+
         resposta = ollama.chat(
             model='llava', 
             messages=[
                 {
                     'role': 'user',
-                    # Uma boa instrução (prompt) ajuda a IA a perceber que é um desenho de linhas
-                    'content': 'Esta imagem é um desenho feito à mão. Descreve o que achas que está desenhado aqui de forma curta e direta.',
+                    'content': prompt,
                     'images': [request.ImageBase64]
                 }
             ]
         )
         
-        # Extrai o texto da resposta
         descricao = resposta['message']['content']
         print(f"Resposta do LLaVA: {descricao}")
-        
         return {"Description": descricao}
         
     except Exception as e:
-        erro = str(e)
-        print("Erro ao processar com LLaVA:", erro)
-        return {"Description": f"Ocorreu um erro a analisar o desenho: {erro}"}
+        return {"Description": f"Ocorreu um erro a analisar o desenho: {str(e)}"}

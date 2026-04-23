@@ -12,6 +12,7 @@ namespace Project.Runtime.Scripts.AI
     public class ImageAnalysisRequest
     {
         public string ImageBase64;
+        public string Topic;
     }
 
     [Serializable]
@@ -42,7 +43,7 @@ namespace Project.Runtime.Scripts.AI
 
         public bool IsAnalyzing { get; private set; }
 
-        public void AnalyzeCurrentDrawing()
+        public void AnalyzeCurrentDrawing(string topic)
         {
             if (IsAnalyzing) return;
             if (_drawablePaper == null) return;
@@ -51,7 +52,7 @@ namespace Project.Runtime.Scripts.AI
             
             if (strokes.Count == 0) return;
 
-            StartCoroutine(RasterizeAndAnalyzeAsync(strokes));
+            StartCoroutine(RasterizeAndAnalyzeAsync(strokes, topic));
         }
 
         private List<List<Vector3>> ExtractStrokes()
@@ -71,7 +72,7 @@ namespace Project.Runtime.Scripts.AI
             return strokes;
         }
 
-        private IEnumerator RasterizeAndAnalyzeAsync(List<List<Vector3>> strokes)
+        private IEnumerator RasterizeAndAnalyzeAsync(List<List<Vector3>> strokes, string topic)
         {
             IsAnalyzing = true;
 
@@ -87,7 +88,13 @@ namespace Project.Runtime.Scripts.AI
 
             var imageBytes = _lastGeneratedTexture.EncodeToPNG();
             var base64Image = Convert.ToBase64String(imageBytes);
-            var requestData = new ImageAnalysisRequest { ImageBase64 = base64Image };
+            
+            var requestData = new ImageAnalysisRequest 
+            { 
+                ImageBase64 = base64Image,
+                Topic = topic
+            };
+            
             var jsonPayload = JsonUtility.ToJson(requestData);
 
             using (var request = new UnityWebRequest(_endpoint, POST_METHOD))
@@ -119,7 +126,6 @@ namespace Project.Runtime.Scripts.AI
             var texture = new Texture2D(TEXTURE_SIZE, TEXTURE_SIZE, TextureFormat.RGB24, false);
             var pixels = new Color[TEXTURE_SIZE * TEXTURE_SIZE];
 
-            // Fundo branco
             for (var i = 0; i < pixels.Length; i++)
                 pixels[i] = Color.white;
 
@@ -170,8 +176,6 @@ namespace Project.Runtime.Scripts.AI
         {
             var size = bounds.size;
             
-            // Determina automaticamente qual eixo ignorar baseado na "fina espessura" do papel.
-            // Se o papel estiver numa mesa, a espessura é o Y (liso).
             bool isFlatX = size.x <= size.y && size.x <= size.z;
             bool isFlatY = size.y <= size.x && size.y <= size.z;
             
@@ -189,18 +193,16 @@ namespace Project.Runtime.Scripts.AI
                 minX = bounds.min.x; minY = bounds.min.z;
                 sX = size.x; sY = size.z;
             }
-            else // isFlatZ (papel numa parede, lê X e Y)
+            else 
             {
                 pX = point.x; pY = point.y;
                 minX = bounds.min.x; minY = bounds.min.y;
                 sX = size.x; sY = size.y;
             }
 
-            // Descobre a dimensão máxima do desenho para manter as proporções perfeitas
             float maxDimension = Mathf.Max(sX, sY);
             if (maxDimension <= 0.0001f) maxDimension = 1f;
 
-            // Normaliza para 0 a 1 e centra o desenho caso seja retangular
             float normalizedX = ((pX - minX) / maxDimension) + ((maxDimension - sX) / (2f * maxDimension));
             float normalizedY = ((pY - minY) / maxDimension) + ((maxDimension - sY) / (2f * maxDimension));
 
@@ -242,7 +244,6 @@ namespace Project.Runtime.Scripts.AI
 
                         if (px >= 0 && px < TEXTURE_SIZE && py >= 0 && py < TEXTURE_SIZE)
                         {
-                            // Tinta preta
                             pixels[py * TEXTURE_SIZE + px] = Color.black;
                         }
                     }

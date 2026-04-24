@@ -31,7 +31,7 @@ namespace Project.Runtime.Scripts.AI
         [SerializeField] private RawImage _paperImage;
         [SerializeField] private string _endpoint = "http://127.0.0.1:8000/generate-drawing";
 
-        public event Action OnDrawingRevealed;
+        public event Action<string> OnDrawingRevealed;
 
         public bool IsGenerating { get; private set; }
 
@@ -76,6 +76,7 @@ namespace Project.Runtime.Scripts.AI
                 if (request.result != UnityWebRequest.Result.Success)
                 {
                     IsGenerating = false;
+                    OnDrawingRevealed?.Invoke(string.Empty);
                     yield break;
                 }
 
@@ -89,6 +90,7 @@ namespace Project.Runtime.Scripts.AI
             if (string.IsNullOrEmpty(base64))
             {
                 IsGenerating = false;
+                OnDrawingRevealed?.Invoke(string.Empty);
                 return;
             }
 
@@ -98,6 +100,7 @@ namespace Project.Runtime.Scripts.AI
             if (!texture.LoadImage(imageBytes))
             {
                 IsGenerating = false;
+                OnDrawingRevealed?.Invoke(string.Empty);
                 return;
             }
 
@@ -107,7 +110,7 @@ namespace Project.Runtime.Scripts.AI
             _paperImage.DOFade(1f, FADE_DURATION).OnComplete(() => 
             {
                 IsGenerating = false;
-                OnDrawingRevealed?.Invoke();
+                OnDrawingRevealed?.Invoke(base64);
             });
         }
     }

@@ -77,8 +77,10 @@ def judge_round(request: JudgeRequest):
         f"You will see two images: Image 1 is the Player's drawing. Image 2 is the AI's drawing. "
         f"Rules: "
         f"1. Roast the Player's drawing (Image 1) and then the AI's drawing (Image 2) in one short brutal sentence (max 10 words each). "
-        f"3. Decide who drew the '{request.Word}' better. "
-        f"4. You MUST end your response EXACTLY with the winner inside square brackets: [Player] or [AI]."
+        f"2. Decide who drew the '{request.Word}' better. "
+        f"3. You MUST format your response EXACTLY as follows, replacing the content in the angle brackets:\n"
+        f"Feedback: <your roast here>\n"
+        f"Winner: <Player or AI>"
     )
 
     try:
@@ -94,11 +96,43 @@ def judge_round(request: JudgeRequest):
             ]
         )
         decisao = resposta['message']['content']
-        print(f"Decisão do Juiz: {decisao}")
-        return {"Result": decisao}
+        print(f"Resposta Bruta do Juiz: {decisao}")
+        
+        feedback_texto = decisao
+        vencedor_final = "None"
+        
+        # Faz o parse da resposta baseada no formato exigido
+        if "Winner:" in decisao:
+            partes = decisao.split("Winner:")
+            feedback_texto = partes[0].replace("Feedback:", "").strip()
+            vencedor_raw = partes[1].strip().lower()
+            
+            if "player" in vencedor_raw:
+                vencedor_final = "Player"
+            elif "ai" in vencedor_raw:
+                vencedor_final = "AI"
+        else:
+            # Fallback caso a IA não obedeça ao formato estrito
+            feedback_texto = decisao.replace("[Player]", "").replace("[AI]", "").strip()
+            if "player" in decisao.lower():
+                vencedor_final = "Player"
+            elif "ai" in decisao.lower():
+                vencedor_final = "AI"
+
+        print(f"Feedback limpo para o TTS: {feedback_texto}")
+        print(f"Vencedor da Ronda: {vencedor_final}")
+        
+        # Agora retorna o feedback limpo e quem ganhou em variáveis separadas
+        return {
+            "Result": feedback_texto,
+            "Winner": vencedor_final
+        }
         
     except Exception as e:
-        return {"Result": f"Erro ao julgar a ronda: {str(e)}"}
+        return {
+            "Result": f"Erro ao julgar a ronda: {str(e)}", 
+            "Winner": "None"
+        }
 
 @app.post("/generate-drawing")
 def generate_drawing(request: AiTextureRequest):

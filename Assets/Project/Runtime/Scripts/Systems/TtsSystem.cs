@@ -17,43 +17,56 @@ namespace Project.Runtime.Scripts.Systems
 
         public event Action OnTtsCompleted;
 
+        private readonly Queue<string> _speechQueue = new Queue<string>();
+        private bool _isPlaying;
+
         public void Speak(string text)
         {
             if (string.IsNullOrEmpty(text)) return;
             
-            StartCoroutine(PlayVoiceAudioAsync(text));
+            _speechQueue.Enqueue(text);
+            
+            if (!_isPlaying)
+                StartCoroutine(ProcessSpeechQueueAsync());
         }
 
-        private IEnumerator PlayVoiceAudioAsync(string text)
+        private IEnumerator ProcessSpeechQueueAsync()
         {
-            var chunks = SplitText(text);
+            _isPlaying = true;
 
-            foreach (var chunk in chunks)
+            while (_speechQueue.Count > 0)
             {
-                var escapedText = UnityWebRequest.EscapeURL(chunk);
-                var url = string.Format(TTS_URL_FORMAT, chunk.Length, escapedText);
+                var text = _speechQueue.Dequeue();
+                var chunks = SplitText(text);
 
-                using (var request = UnityWebRequestMultimedia.GetAudioClip(url, AudioType.MPEG))
+                foreach (var chunk in chunks)
                 {
-                    yield return request.SendWebRequest();
-                    
-                    if (request.result != UnityWebRequest.Result.Success)
+                    var escapedText = UnityWebRequest.EscapeURL(chunk);
+                    var url = string.Format(TTS_URL_FORMAT, chunk.Length, escapedText);
+
+                    using (var request = UnityWebRequestMultimedia.GetAudioClip(url, AudioType.MPEG))
                     {
-                        Debug.LogError(request.error);
-                        continue;
+                        yield return request.SendWebRequest();
+                        
+                        if (request.result != UnityWebRequest.Result.Success)
+                        {
+                            Debug.LogError(request.error);
+                            continue;
+                        }
+
+                        var clip = DownloadHandlerAudioClip.GetContent(request);
+                        
+                        if (_audioSource == null) break;
+
+                        _audioSource.clip = clip;
+                        _audioSource.Play();
+
+                        yield return new WaitForSeconds(clip.length);
                     }
-
-                    var clip = DownloadHandlerAudioClip.GetContent(request);
-                    
-                    if (_audioSource == null) break;
-
-                    _audioSource.clip = clip;
-                    _audioSource.Play();
-
-                    yield return new WaitForSeconds(clip.length);
                 }
             }
             
+            _isPlaying = false;
             OnTtsCompleted?.Invoke();
         }
 

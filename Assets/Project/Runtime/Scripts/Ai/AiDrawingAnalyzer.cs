@@ -9,6 +9,22 @@ using UnityEngine.UI;
 namespace Project.Runtime.Scripts.AI
 {
     [Serializable]
+    public class JudgeAnalysisRequest
+    {
+        public string PlayerImageBase64;
+        public string AiImageBase64;
+        public string Topic;
+        public string Word;
+    }
+
+    [Serializable]
+    public class JudgeAnalysisResponse
+    {
+        public string Result;
+        public string Winner;
+    }
+
+    [Serializable]
     public class ImageAnalysisRequest
     {
         public string ImageBase64;
@@ -30,18 +46,20 @@ namespace Project.Runtime.Scripts.AI
         private const float PADDING_FACTOR = 0.1f;
 
         public event Action<string> OnAnalysisCompleted;
+        public event Action<string, string> OnJudgeCompleted;
         public event Action<string> OnAnalysisFailed;
 
         [Header("Network Settings")]
-        [SerializeField] private string _endpoint = "http://127.0.0.1:8000/analyze-drawing";
+        [SerializeField] private string _analyzeEndpoint = "http://127.0.0.1:8000/analyze-drawing";
+        [SerializeField] private string _judgeEndpoint = "http://127.0.0.1:8000/judge-round";
 
         [Header("References")]
         [SerializeField] private DrawablePaper _drawablePaper;
         [SerializeField] private RawImage _debugDisplayImage;
 
-        private Texture2D _lastGeneratedTexture;
-
         public bool IsAnalyzing { get; private set; }
+
+        private Texture2D _lastGeneratedTexture;
 
         public void AnalyzeCurrentDrawing(string topic)
         {
@@ -53,6 +71,16 @@ namespace Project.Runtime.Scripts.AI
             if (strokes.Count == 0) return;
 
             StartCoroutine(RasterizeAndAnalyzeAsync(strokes, topic));
+        }
+
+        public void JudgeCurrentDrawing(string aiBase64, string topic, string word)
+        {
+            if (IsAnalyzing) return;
+            if (_drawablePaper == null) return;
+
+            var strokes = ExtractStrokes();
+            
+            StartCoroutine(RasterizeAndJudgeAsync(strokes, aiBase64, topic, word));
         }
 
         private List<List<Vector3>> ExtractStrokes()
@@ -76,18 +104,7 @@ namespace Project.Runtime.Scripts.AI
         {
             IsAnalyzing = true;
 
-            if (_lastGeneratedTexture != null) Destroy(_lastGeneratedTexture);
-
-            _lastGeneratedTexture = GenerateTexture(strokes);
-            
-            if (_debugDisplayImage != null)
-            {
-                _debugDisplayImage.texture = _lastGeneratedTexture;
-                _debugDisplayImage.enabled = true;
-            }
-
-            var imageBytes = _lastGeneratedTexture.EncodeToPNG();
-            var base64Image = Convert.ToBase64String(imageBytes);
+            var base64Image = PrepareTextureBase64(strokes);
             
             var requestData = new ImageAnalysisRequest 
             { 
@@ -97,7 +114,7 @@ namespace Project.Runtime.Scripts.AI
             
             var jsonPayload = JsonUtility.ToJson(requestData);
 
-            using (var request = new UnityWebRequest(_endpoint, POST_METHOD))
+            using (var request = new UnityWebRequest(_analyzeEndpoint, POST_METHOD))
             {
                 var uploadHandler = new UploadHandlerRaw(Encoding.UTF8.GetBytes(jsonPayload));
                 uploadHandler.contentType = CONTENT_TYPE;
@@ -122,6 +139,65 @@ namespace Project.Runtime.Scripts.AI
             IsAnalyzing = false;
         }
 
+        private IEnumerator RasterizeAndJudgeAsync(List<List<Vector3>> strokes, string aiBase64, string topic, string word)
+        {
+            IsAnalyzing = true;
+
+            var playerBase64Image = PrepareTextureBase64(strokes);
+            
+            var requestData = new JudgeAnalysisRequest 
+            { 
+                PlayerImageBase64 = playerBase64Image,
+                AiImageBase64 = aiBase64,
+                Topic = topic,
+                Word = word
+            };
+            
+            var jsonPayload = JsonUtility.ToJson(requestData);
+
+            using (var request = new UnityWebRequest(_judgeEndpoint, POST_METHOD))
+            {
+                var uploadHandler = new UploadHandlerRaw(Encoding.UTF8.GetBytes(jsonPayload));
+                uploadHandler.contentType = CONTENT_TYPE;
+                
+                request.uploadHandler = uploadHandler;
+                request.downloadHandler = new DownloadHandlerBuffer();
+
+                yield return request.SendWebRequest();
+
+                if (request.result != UnityWebRequest.Result.Success)
+                {
+                    OnAnalysisFailed?.Invoke(request.error);
+                    IsAnalyzing = false;
+                    yield break;
+                }
+                
+                var response = JsonUtility.FromJson<JudgeAnalysisResponse>(request.downloadHandler.text);
+                
+                // O TTS já só recebe a resposta tratada e o vencedor vem isolado na sua própria string
+                OnJudgeCompleted?.Invoke(response.Result, response.Winner);
+            }
+
+            IsAnalyzing = false;
+        }
+
+        private string PrepareTextureBase64(List<List<Vector3>> strokes)
+        {
+            if (_lastGeneratedTexture != null) Destroy(_lastGeneratedTexture);
+
+            _lastGeneratedTexture = GenerateTexture(strokes);
+            
+            if (_debugDisplayImage != null)
+            {
+                _debugDisplayImage.texture = _lastGeneratedTexture;
+                _debugDisplayImage.enabled = true;
+            }
+
+            var imageBytes = _lastGeneratedTexture.EncodeToPNG();
+            
+            return Convert.ToBase64String(imageBytes);
+        }
+
         private Texture2D GenerateTexture(List<List<Vector3>> strokes)
         {
             var texture = new Texture2D(TEXTURE_SIZE, TEXTURE_SIZE, TextureFormat.RGB24, false);
@@ -130,15 +206,18 @@ namespace Project.Runtime.Scripts.AI
             for (var i = 0; i < pixels.Length; i++)
                 pixels[i] = Color.white;
 
-            var bounds = CalculateBounds(strokes);
-
-            foreach (var stroke in strokes)
+            if (strokes != null && strokes.Count > 0)
             {
-                for (var i = 0; i < stroke.Count - 1; i++)
+                var bounds = CalculateBounds(strokes);
+
+                foreach (var stroke in strokes)
                 {
-                    var start = MapToPixel(stroke[i], bounds);
-                    var end = MapToPixel(stroke[i + 1], bounds);
-                    RasterizeLine(pixels, start, end);
+                    for (var i = 0; i < stroke.Count - 1; i++)
+                    {
+                        var start = MapToPixel(stroke[i], bounds);
+                        var end = MapToPixel(stroke[i + 1], bounds);
+                        RasterizeLine(pixels, start, end);
+                    }
                 }
             }
 

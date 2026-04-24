@@ -1,15 +1,13 @@
 using System;
 using DG.Tweening;
-using Project.Runtime.Scripts.Data;
-using Project.Runtime.Scripts.Interaction.Interactables.Base;
 using UnityEngine;
 using UnityEngine.Events;
 
-namespace Project.Runtime.Scripts.Interaction.Interactables
+namespace Project.Runtime.Scripts.Interaction
 {
-    public class ButtonInteractable : BaseInteractable
+    public class ButtonInteractable : MonoBehaviour, IInteractable
     {
-        private const float HALF_DIVISOR = 2f;
+        private const float ANIMATION_DIVISOR = 2f;
 
         [Header("Button Settings")]
         [SerializeField] private float _pushDistance = 0.05f;
@@ -23,16 +21,12 @@ namespace Project.Runtime.Scripts.Interaction.Interactables
         private Vector3 _originalPosition;
         private bool _isPressed;
 
-        public override InteractionAction Action => InteractionAction.Press;
-
-        protected override void Awake()
+        private void Awake()
         {
-            base.Awake();
-            
             _originalPosition = transform.localPosition;
         }
 
-        protected override void ExecuteInteraction(PlayerInteractionController interactor)
+        public void Interact()
         {
             if (_isPressed) return;
 
@@ -40,14 +34,13 @@ namespace Project.Runtime.Scripts.Interaction.Interactables
 
             transform.DOKill();
 
+            var targetPosition = _originalPosition + Vector3.back * _pushDistance;
             var sequence = DOTween.Sequence();
-            sequence.Append(transform.DOLocalMoveY(_originalPosition.y - _pushDistance, _animationDuration / HALF_DIVISOR));
+            
+            sequence.Append(transform.DOLocalMove(targetPosition, _animationDuration / ANIMATION_DIVISOR));
             sequence.AppendCallback(TriggerEvents);
-            sequence.Append(transform.DOLocalMoveY(_originalPosition.y, _animationDuration / HALF_DIVISOR));
+            sequence.Append(transform.DOLocalMove(_originalPosition, _animationDuration / ANIMATION_DIVISOR));
             sequence.OnComplete(ResetButton);
-
-            if (interactor != null)
-                interactor.ForceUpdateAction();
         }
 
         private void TriggerEvents()

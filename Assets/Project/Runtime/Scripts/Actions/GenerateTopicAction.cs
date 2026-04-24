@@ -1,4 +1,4 @@
-﻿using Project.Runtime.Scripts.Interaction.Interactables;
+﻿using Project.Runtime.Scripts.Interaction;
 using Project.Runtime.Scripts.Systems;
 using UnityEngine;
 

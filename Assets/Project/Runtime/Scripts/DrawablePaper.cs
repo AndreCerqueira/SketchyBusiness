@@ -1,11 +1,10 @@
 ﻿using System.Collections.Generic;
-using Project.Runtime.Scripts.Interaction.Interactables;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
 namespace Project.Runtime.Scripts
 {
-    [RequireComponent(typeof(InspectableObject), typeof(Collider))]
+    [RequireComponent(typeof(Collider))]
     public class DrawablePaper : MonoBehaviour
     {
         private const float MIN_DRAW_DISTANCE = 0.01f;
@@ -16,36 +15,23 @@ namespace Project.Runtime.Scripts
         [SerializeField] private LineRenderer _linePrefab;
         [SerializeField] private LayerMask _drawableLayer;
 
-        private InspectableObject _inspectable;
         private Collider _collider;
         private Camera _mainCamera;
-        private bool _canDraw;
         private LineRenderer _currentLineRenderer;
         private Vector3 _lastLocalPoint;
         private readonly List<LineRenderer> _strokes = new List<LineRenderer>();
 
+        public bool CanDraw { get; set; }
+
         private void Awake()
         {
-            _inspectable = GetComponent<InspectableObject>();
             _collider = GetComponent<Collider>();
             _mainCamera = Camera.main;
         }
 
-        private void OnEnable()
-        {
-            _inspectable.OnInspectionStarted += HandleInspectionStarted;
-            _inspectable.OnInspectionStopped += HandleInspectionStopped;
-        }
-
-        private void OnDisable()
-        {
-            _inspectable.OnInspectionStarted -= HandleInspectionStarted;
-            _inspectable.OnInspectionStopped -= HandleInspectionStopped;
-        }
-
         private void Update()
         {
-            if (!_canDraw) return;
+            if (!CanDraw) return;
             if (Mouse.current == null) return;
 
             if (Mouse.current.leftButton.wasPressedThisFrame)
@@ -74,17 +60,6 @@ namespace Project.Runtime.Scripts
             }
             
             _strokes.Clear();
-        }
-
-        private void HandleInspectionStarted()
-        {
-            _canDraw = true;
-        }
-
-        private void HandleInspectionStopped()
-        {
-            _canDraw = false;
-            EndStroke();
         }
 
         private bool GetRaycastPoint(out Vector3 localPoint)

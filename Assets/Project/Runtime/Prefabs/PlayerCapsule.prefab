@@ -256,7 +256,6 @@ GameObject:
   - component: {fileID: 493246203169320734}
   - component: {fileID: 906035621907339028}
   - component: {fileID: 6259040971615113203}
-  - component: {fileID: 7445617245767612897}
   - component: {fileID: 669367629331973890}
   m_Layer: 8
   m_Name: PlayerCapsule
@@ -486,28 +485,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Project.Runtime.Scripts.Player.PlayerFootsteps
   _controller: {fileID: 2235927441211181994}
-  _footstepEvent:
-    Guid:
-      Data1: 0
-      Data2: 0
-      Data3: 0
-      Data4: 0
-    Path: 
---- !u!114 &7445617245767612897
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8716165610626640019}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 4b32f441fb622884fb32e60ea91608d2, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::Project.Runtime.Scripts.Player.CameraBobbing
-  _controller: {fileID: 2235927441211181994}
-  _cameraTarget: {fileID: 1279075895579418203}
-  _settings: {fileID: 11400000, guid: 9b44e9244a1160c47bf5372437acd4a4, type: 2}
+  _footstepSounds: []
 --- !u!114 &669367629331973890
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -520,21 +498,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4d8175d357334785b3cc42ca523e26ed, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Project.Runtime.Scripts.Interaction.PlayerInteractionController
-  _chargeThrowSound:
-    Guid:
-      Data1: 0
-      Data2: 0
-      Data3: 0
-      Data4: 0
-    Path: 
+  _chargeThrowSound: {fileID: 0}
   _playerController: {fileID: 1179306219156558951}
   _mainCamera: {fileID: 0}
   _interactableLayer:
     serializedVersion: 2
     m_Bits: 64
   _interactActionInput: {fileID: 1781555164194001046, guid: 052faaac586de48259a63d0c4782560b, type: 3}
-  _handTransform: {fileID: 1279075895579418203}
-  _inspectTransform: {fileID: 1279075895579418203}
+  _handTransform: {fileID: 299500282802645006}
+  _inspectTransform: {fileID: 2351135799892767055}
   _maxChargeTime: 2
   _maxThrowForce: 15
   _verticalThrowMultiplier: 0.35

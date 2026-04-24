@@ -1,4 +1,4 @@
-﻿using Project.Runtime.Scripts.Interaction.Interactables;
+﻿using Project.Runtime.Scripts.Interaction;
 using Project.Runtime.Scripts.Systems;
 using UnityEngine;
 
@@ -8,7 +8,7 @@ namespace Project.Runtime.Scripts.Actions
     public class SubmitDrawingAction : MonoBehaviour
     {
         [Header("References")]
-        [SerializeField] private DrawingSystem _drawingSystem;
+        [SerializeField] private GameLoopSystem _gameLoopSystem;
 
         private ButtonInteractable _buttonInteractable;
 
@@ -31,9 +31,9 @@ namespace Project.Runtime.Scripts.Actions
 
         private void HandleButtonPressed()
         {
-            if (_drawingSystem == null) return;
+            if (_gameLoopSystem == null) return;
             
-            _drawingSystem.SubmitDrawing();
+            _gameLoopSystem.SubmitAndAnalyzeDrawing();
         }
     }
 }

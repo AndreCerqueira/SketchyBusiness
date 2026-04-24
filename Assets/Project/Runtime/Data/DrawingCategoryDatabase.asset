@@ -25,30 +25,36 @@ MonoBehaviour:
     - Fish
     - Frog
     - Butterfly
+    - Bear
+    - Rabbit
+    - Shark
+    - Whale
   - CategoryName: Vehicles
     Words:
     - Car
     - Airplane
-    - Boat
+    - Sailboat
     - Bicycle
     - Train
     - Helicopter
     - Submarine
     - Truck
     - Motorcycle
-    - Rocket
+    - Bus
+    - Cruise Ship
   - CategoryName: Household Objects
     Words:
     - Chair
     - Table
-    - Lamp
+    - Floor Lamp
     - Television
     - Bed
-    - Sofa
-    - Refrigerator
-    - Fork
+    - Couch
     - Knife
-    - Glass
+    - Fork
+    - Wine Glass
+    - Telephone
+    - Alarm Clock
   - CategoryName: Nature
     Words:
     - Tree
@@ -61,15 +67,18 @@ MonoBehaviour:
     - River
     - Fire
     - Leaf
-  - CategoryName: Professions
+    - Rain
+    - Snowflake
+    - Rainbow
+  - CategoryName: Tools & Tech
     Words:
-    - Doctor
-    - Police Officer
-    - Firefighter
-    - Teacher
-    - Astronaut
-    - Painter
-    - Chef
-    - Mail Carrier
-    - Judge
-    - Mechanic
+    - Hammer
+    - Saw
+    - Screwdriver
+    - Computer
+    - Laptop
+    - Keyboard
+    - Mouse
+    - Camera
+    - Calculator
+    - Headphones

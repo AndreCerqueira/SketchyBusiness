@@ -32,27 +32,27 @@ namespace Project.Editor.Scripts
                 new DrawingCategory 
                 { 
                     CategoryName = "Animals", 
-                    Words = new List<string> { "Cat", "Dog", "Elephant", "Giraffe", "Bird", "Lion", "Snake", "Fish", "Frog", "Butterfly" } 
+                    Words = new List<string> { "Cat", "Dog", "Elephant", "Giraffe", "Bird", "Lion", "Snake", "Fish", "Frog", "Butterfly", "Bear", "Rabbit", "Shark", "Whale" } 
                 },
                 new DrawingCategory 
                 { 
                     CategoryName = "Vehicles", 
-                    Words = new List<string> { "Car", "Airplane", "Boat", "Bicycle", "Train", "Helicopter", "Submarine", "Truck", "Motorcycle", "Rocket" } 
+                    Words = new List<string> { "Car", "Airplane", "Sailboat", "Bicycle", "Train", "Helicopter", "Submarine", "Truck", "Motorcycle", "Bus", "Cruise Ship" } 
                 },
                 new DrawingCategory 
                 { 
                     CategoryName = "Household Objects", 
-                    Words = new List<string> { "Chair", "Table", "Lamp", "Television", "Bed", "Sofa", "Refrigerator", "Fork", "Knife", "Glass" } 
+                    Words = new List<string> { "Chair", "Table", "Floor Lamp", "Television", "Bed", "Couch", "Knife", "Fork", "Wine Glass", "Telephone", "Alarm Clock" } 
                 },
                 new DrawingCategory 
                 { 
                     CategoryName = "Nature", 
-                    Words = new List<string> { "Tree", "Flower", "Mountain", "Sun", "Cloud", "Star", "Moon", "River", "Fire", "Leaf" } 
+                    Words = new List<string> { "Tree", "Flower", "Mountain", "Sun", "Cloud", "Star", "Moon", "River", "Fire", "Leaf", "Rain", "Snowflake", "Rainbow" } 
                 },
                 new DrawingCategory 
                 { 
-                    CategoryName = "Professions", 
-                    Words = new List<string> { "Doctor", "Police Officer", "Firefighter", "Teacher", "Astronaut", "Painter", "Chef", "Mail Carrier", "Judge", "Mechanic" } 
+                    CategoryName = "Tools & Tech", 
+                    Words = new List<string> { "Hammer", "Saw", "Screwdriver", "Computer", "Laptop", "Keyboard", "Mouse", "Camera", "Calculator", "Headphones" } 
                 }
             });
 

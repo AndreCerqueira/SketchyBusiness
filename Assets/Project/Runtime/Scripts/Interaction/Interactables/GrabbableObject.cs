@@ -1,6 +1,5 @@
 using System.Collections;
 using DG.Tweening;
-using FMODUnity;
 using Project.Runtime.Scripts.Data;
 using Project.Runtime.Scripts.Interaction.Interactables.Base;
 using UnityEngine;
@@ -15,7 +14,7 @@ namespace Project.Runtime.Scripts.Interaction.Interactables
         private const float LAYER_RESET_DELAY = 0.5f;
         private const float INITIAL_MUTE_DURATION = 2f;
         
-        [SerializeField] private EventReference _dropSound;
+        [SerializeField] private AudioClip _dropSound;
         [SerializeField] private bool _usePlacementMode;
 
         private Rigidbody _rigidbody;
@@ -191,7 +190,8 @@ namespace Project.Runtime.Scripts.Interaction.Interactables
         
         private void PlayDropSound()
         {
-            RuntimeManager.PlayOneShot(_dropSound, transform.position);
+            if (_dropSound != null)
+                AudioSource.PlayClipAtPoint(_dropSound, transform.position);
         }
     }
 }

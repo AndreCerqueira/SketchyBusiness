@@ -1,5 +1,4 @@
 using DG.Tweening;
-using FMOD.Studio;
 using Project.Runtime.Scripts.Data;
 using Project.Runtime.Scripts.Interaction.Interactables.Base;
 using UnityEngine;
@@ -8,13 +7,14 @@ namespace Project.Runtime.Scripts.Interaction.Interactables
 {
     public class DrawerInteractable : BaseInteractable
     {
-        private const string STATE_PARAMETER = "OpenableState";
-        private const string STATE_OPEN = "Open";
-        private const string STATE_CLOSE = "Close";
-        
+        [Header("Drawer Settings")]
         [SerializeField] private Vector3 _openOffset;
         [SerializeField] private float _animationDuration = 1f;
         [SerializeField] private bool _startOpen;
+
+        [Header("Audio Settings")]
+        [SerializeField] private AudioClip _openSound;
+        [SerializeField] private AudioClip _closeSound;
 
         private Vector3 _closedPosition;
         private Vector3 _openPosition;
@@ -34,12 +34,6 @@ namespace Project.Runtime.Scripts.Interaction.Interactables
                 transform.localPosition = _openPosition;
         }
 
-        protected override void ConfigureInteractionSound(EventInstance instance)
-        {
-            var stateLabel = _isOpen ? STATE_OPEN : STATE_CLOSE;
-            instance.setParameterByNameWithLabel(STATE_PARAMETER, stateLabel);
-        }
-
         protected override void ExecuteInteraction(PlayerInteractionController interactor)
         {
             _isOpen = !_isOpen;
@@ -49,6 +43,11 @@ namespace Project.Runtime.Scripts.Interaction.Interactables
             transform.DOLocalMove(targetPosition, _animationDuration);
             
             if (interactor != null) interactor.ForceUpdateAction();
+        }
+
+        protected override AudioClip GetInteractionSound()
+        {
+            return _isOpen ? _openSound : _closeSound;
         }
     }
 }

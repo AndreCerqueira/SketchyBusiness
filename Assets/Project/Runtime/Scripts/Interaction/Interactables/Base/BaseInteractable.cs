@@ -1,6 +1,4 @@
 ﻿using System.Collections.Generic;
-using FMOD.Studio;
-using FMODUnity;
 using Project.Runtime.Scripts.Data;
 using UnityEngine;
 
@@ -22,7 +20,7 @@ namespace Project.Runtime.Scripts.Interaction.Interactables.Base
         protected static readonly int ColorProperty = Shader.PropertyToID("_Color");
         
         [Header("Audio")]
-        [SerializeField] private EventReference _interactionSound;
+        [SerializeField] protected AudioClip _interactionSound;
 
         [Header("Focus Visuals")]
         [SerializeField] protected Color _focusOutlineColor = Color.white;
@@ -30,11 +28,17 @@ namespace Project.Runtime.Scripts.Interaction.Interactables.Base
         protected float _focusOutlineScale = 1f;
 
         protected Material[] _instancedMaterials;
+        protected AudioSource _audioSource;
 
         public abstract InteractionAction Action { get; }
 
         protected virtual void Awake()
         {
+            _audioSource = GetComponent<AudioSource>();
+            
+            if (_audioSource == null)
+                _audioSource = gameObject.AddComponent<AudioSource>();
+
             var renderers = new List<Renderer>();
             var rootRenderer = GetComponent<Renderer>();
             
@@ -120,19 +124,18 @@ namespace Project.Runtime.Scripts.Interaction.Interactables.Base
             if (playSound) PlayInteractionSound();
         }
         
-        private void PlayInteractionSound()
+        protected virtual void PlayInteractionSound()
         {
-            if (_interactionSound.IsNull) return;
-
-            var instance = RuntimeManager.CreateInstance(_interactionSound);
-            ConfigureInteractionSound(instance);
+            var clip = GetInteractionSound();
             
-            instance.start();
-            instance.release();
+            if (clip == null || _audioSource == null) return;
+
+            _audioSource.PlayOneShot(clip);
         }
-        
-        protected virtual void ConfigureInteractionSound(EventInstance instance)
+
+        protected virtual AudioClip GetInteractionSound()
         {
+            return _interactionSound;
         }
 
         protected abstract void ExecuteInteraction(PlayerInteractionController interactor);

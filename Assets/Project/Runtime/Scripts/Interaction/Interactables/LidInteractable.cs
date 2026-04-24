@@ -1,5 +1,4 @@
 ﻿using DG.Tweening;
-using FMOD.Studio;
 using Project.Runtime.Scripts.Data;
 using Project.Runtime.Scripts.Interaction.Interactables.Base;
 using UnityEngine;
@@ -16,9 +15,6 @@ namespace Project.Runtime.Scripts.Interaction.Interactables
     public class LidInteractable : BaseInteractable
     {
         private const float OPEN_ANGLE = 90f;
-        private const string STATE_PARAMETER = "OpenableState";
-        private const string STATE_OPEN = "Open";
-        private const string STATE_CLOSE = "Close";
         
         [Header("Open Settings")]
         [SerializeField] private bool _isInvertedRotation;
@@ -27,6 +23,10 @@ namespace Project.Runtime.Scripts.Interaction.Interactables
         
         [Header("Animation Settings")]
         [SerializeField] private float _animationDuration = 1f;
+
+        [Header("Audio Settings")]
+        [SerializeField] private AudioClip _openSound;
+        [SerializeField] private AudioClip _closeSound;
 
         private bool _isOpen;
 
@@ -57,13 +57,13 @@ namespace Project.Runtime.Scripts.Interaction.Interactables
             transform.DOKill();
             transform.DOLocalRotate(targetRotation, _animationDuration);
             
-            interactor.ForceUpdateAction();
+            if (interactor != null)
+                interactor.ForceUpdateAction();
         }
-        
-        protected override void ConfigureInteractionSound(EventInstance instance)
+
+        protected override AudioClip GetInteractionSound()
         {
-            var stateLabel = _isOpen ? STATE_OPEN : STATE_CLOSE;
-            instance.setParameterByNameWithLabel(STATE_PARAMETER, stateLabel);
+            return _isOpen ? _openSound : _closeSound;
         }
 
         private Vector3 GetTargetRotation(float angle)

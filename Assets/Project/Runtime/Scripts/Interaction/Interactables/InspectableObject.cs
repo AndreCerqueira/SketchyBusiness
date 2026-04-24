@@ -1,7 +1,5 @@
 ﻿using System;
 using DG.Tweening;
-using FMOD.Studio;
-using FMODUnity;
 using Project.Runtime.Scripts.Data;
 using Project.Runtime.Scripts.Interaction.Interactables.Base;
 using Sirenix.OdinInspector;
@@ -24,7 +22,7 @@ namespace Project.Runtime.Scripts.Interaction.Interactables
         public event Action OnInspectionStopped;
         
         [ShowIf(nameof(_inspectMode), InspectMode.BringObjectToCamera)]
-        [SerializeField] private EventReference _dropSound;
+        [SerializeField] private AudioClip _dropSound;
 
         [SerializeField] private InspectMode _inspectMode = InspectMode.BringObjectToCamera;
 
@@ -165,7 +163,8 @@ namespace Project.Runtime.Scripts.Interaction.Interactables
                 if (_collider)
                     _collider.enabled = true;
                 
-                RuntimeManager.PlayOneShot(_dropSound, transform.position);
+                if (_dropSound != null)
+                    AudioSource.PlayClipAtPoint(_dropSound, transform.position);
             }
         }
     }

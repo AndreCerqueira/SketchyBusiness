@@ -1,5 +1,4 @@
-﻿using FMODUnity;
-using UnityEngine;
+﻿using UnityEngine;
 
 namespace Project.Runtime.Scripts.Player
 {
@@ -10,10 +9,17 @@ namespace Project.Runtime.Scripts.Player
         private const float SPEED_DIVISOR = 4f;
 
         [SerializeField] private CharacterController _controller;
-        [SerializeField] private EventReference _footstepEvent;
+        [SerializeField] private AudioClip[] _footstepSounds;
 
+        private AudioSource _audioSource;
         private float _stepTimer;
         private bool _wasMoving;
+
+        private void Awake()
+        {
+            _audioSource = GetComponent<AudioSource>();
+            if (_audioSource == null) _audioSource = gameObject.AddComponent<AudioSource>();
+        }
 
         private void Update()
         {
@@ -49,7 +55,12 @@ namespace Project.Runtime.Scripts.Player
 
         private void PlayFootstepSound()
         {
-            RuntimeManager.PlayOneShot(_footstepEvent, transform.position);
+            if (_footstepSounds == null || _footstepSounds.Length == 0 || _audioSource == null) return;
+            
+            var clip = _footstepSounds[Random.Range(0, _footstepSounds.Length)];
+            
+            if (clip != null)
+                _audioSource.PlayOneShot(clip);
         }
     }
 }

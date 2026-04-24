@@ -1,6 +1,4 @@
 ﻿using System;
-using FMOD.Studio;
-using FMODUnity;
 using Project.Runtime.Scripts.Data;
 using Project.Runtime.Scripts.Interaction.Interactables;
 using Project.Runtime.Scripts.Interaction.Interactables.Base;
@@ -21,7 +19,7 @@ namespace Project.Runtime.Scripts.Interaction
         public event Action<bool> OnInspectStateChanged;
         
         [Header("Audio")]
-        [SerializeField] private EventReference _chargeThrowSound;
+        [SerializeField] private AudioClip _chargeThrowSound;
 
         [Header("References")]
         [SerializeField] private FirstPersonController _playerController;
@@ -53,10 +51,13 @@ namespace Project.Runtime.Scripts.Interaction
         private bool _isChargingThrow;
         private float _currentChargeTime;
         
-        private EventInstance _chargeThrowInstance;
+        private AudioSource _audioSource;
 
         private void Awake()
         {
+            _audioSource = GetComponent<AudioSource>();
+            if (_audioSource == null) _audioSource = gameObject.AddComponent<AudioSource>();
+
             if (_playerController != null)
                 PlayerCollider = _playerController.GetComponent<Collider>();
         }
@@ -228,8 +229,12 @@ namespace Project.Runtime.Scripts.Interaction
                 _isChargingThrow = true;
                 _currentChargeTime = 0f;
                 
-                _chargeThrowInstance = RuntimeManager.CreateInstance(_chargeThrowSound);
-                _chargeThrowInstance.start();
+                if (_chargeThrowSound != null && _audioSource != null)
+                {
+                    _audioSource.clip = _chargeThrowSound;
+                    _audioSource.loop = true;
+                    _audioSource.Play();
+                }
                 
                 OnThrowChargeStateChanged?.Invoke(true);
             }
@@ -265,10 +270,10 @@ namespace Project.Runtime.Scripts.Interaction
         
         private void StopChargeSound()
         {
-            if (!_chargeThrowInstance.isValid()) return;
-            
-            _chargeThrowInstance.stop(FMOD.Studio.STOP_MODE.ALLOWFADEOUT);
-            _chargeThrowInstance.release();
+            if (_audioSource != null && _audioSource.isPlaying)
+            {
+                _audioSource.Stop();
+            }
         }
 
         private void OnDestroy()

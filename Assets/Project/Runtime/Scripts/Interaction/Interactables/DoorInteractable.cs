@@ -1,5 +1,4 @@
 ﻿using DG.Tweening;
-using FMOD.Studio;
 using Project.Runtime.Scripts.Data;
 using Project.Runtime.Scripts.Interaction.Interactables.Base;
 using UnityEngine;
@@ -9,9 +8,6 @@ namespace Project.Runtime.Scripts.Interaction.Interactables
     public class DoorInteractable : BaseInteractable
     {
         private const float OPEN_ANGLE = 90f;
-        private const string STATE_PARAMETER = "OpenableState";
-        private const string STATE_OPEN = "Open";
-        private const string STATE_CLOSE = "Close";
         
         [Header("Open Settings")]
         [SerializeField] private bool _invertRotation;
@@ -20,6 +16,10 @@ namespace Project.Runtime.Scripts.Interaction.Interactables
         
         [Header("Animation Settings")]
         [SerializeField] private float _animationDuration = 1f;
+
+        [Header("Audio Settings")]
+        [SerializeField] private AudioClip _openSound;
+        [SerializeField] private AudioClip _closeSound;
         
         private bool _isOpen;
         
@@ -39,12 +39,6 @@ namespace Project.Runtime.Scripts.Interaction.Interactables
                 ? new Vector3(0f, 0f, initialAngle) 
                 : new Vector3(0f, initialAngle, 0f);
         }
-        
-        protected override void ConfigureInteractionSound(EventInstance instance)
-        {
-            var stateLabel = _isOpen ? STATE_OPEN : STATE_CLOSE;
-            instance.setParameterByNameWithLabel(STATE_PARAMETER, stateLabel);
-        }
 
         protected override void ExecuteInteraction(PlayerInteractionController interactor)
         {
@@ -63,6 +57,11 @@ namespace Project.Runtime.Scripts.Interaction.Interactables
             
             if (interactor != null) 
                 interactor.ForceUpdateAction();
+        }
+
+        protected override AudioClip GetInteractionSound()
+        {
+            return _isOpen ? _openSound : _closeSound;
         }
     }
 }

@@ -84,14 +84,17 @@ namespace Project.Runtime.Scripts.Systems
         {
             yield return new WaitForSeconds(TRANSITION_DELAY);
 
+            if (_drawablePaper != null)
+            {
+                _drawablePaper.ClearDrawing();
+                _drawablePaper.CanDraw = true;
+            }
+
             if (_cameraController != null)
                 _cameraController.SwitchToDrawingBoard();
 
             if (_drawingSystem != null)
                 _drawingSystem.GenerateNewTopic();
-
-            if (_drawablePaper != null)
-                _drawablePaper.CanDraw = true;
         }
 
         private void HandleAnalysisCompleted(string feedback)

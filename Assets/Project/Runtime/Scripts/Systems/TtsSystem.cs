@@ -1,5 +1,6 @@
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Networking;
 
@@ -9,6 +10,7 @@ namespace Project.Runtime.Scripts.Systems
     public class TtsSystem : MonoBehaviour
     {
         private const string TTS_URL_FORMAT = "https://translate.google.com/translate_tts?ie=UTF-8&total=1&idx=0&textlen={0}&client=tw-ob&q={1}&tl=en";
+        private const int MAX_CHUNK_LENGTH = 150;
 
         [Header("Audio")]
         [SerializeField] private AudioSource _audioSource;
@@ -24,26 +26,58 @@ namespace Project.Runtime.Scripts.Systems
 
         private IEnumerator PlayVoiceAudioAsync(string text)
         {
-            var escapedText = UnityWebRequest.EscapeURL(text);
-            var url = string.Format(TTS_URL_FORMAT, text.Length, escapedText);
+            var chunks = SplitText(text);
 
-            using (var request = UnityWebRequestMultimedia.GetAudioClip(url, AudioType.MPEG))
+            foreach (var chunk in chunks)
             {
-                yield return request.SendWebRequest();
-                
-                if (request.result != UnityWebRequest.Result.Success) yield break;
+                var escapedText = UnityWebRequest.EscapeURL(chunk);
+                var url = string.Format(TTS_URL_FORMAT, chunk.Length, escapedText);
 
-                var clip = DownloadHandlerAudioClip.GetContent(request);
-                
-                if (_audioSource == null) yield break;
+                using (var request = UnityWebRequestMultimedia.GetAudioClip(url, AudioType.MPEG))
+                {
+                    yield return request.SendWebRequest();
+                    
+                    if (request.result != UnityWebRequest.Result.Success)
+                    {
+                        Debug.LogError(request.error);
+                        continue;
+                    }
 
-                _audioSource.clip = clip;
-                _audioSource.Play();
+                    var clip = DownloadHandlerAudioClip.GetContent(request);
+                    
+                    if (_audioSource == null) break;
 
-                yield return new WaitForSeconds(clip.length);
-                
-                OnTtsCompleted?.Invoke();
+                    _audioSource.clip = clip;
+                    _audioSource.Play();
+
+                    yield return new WaitForSeconds(clip.length);
+                }
             }
+            
+            OnTtsCompleted?.Invoke();
+        }
+
+        private List<string> SplitText(string text)
+        {
+            var words = text.Split(' ');
+            var chunks = new List<string>();
+            var currentChunk = string.Empty;
+
+            foreach (var word in words)
+            {
+                if (currentChunk.Length + word.Length + 1 > MAX_CHUNK_LENGTH)
+                {
+                    chunks.Add(currentChunk.Trim());
+                    currentChunk = string.Empty;
+                }
+                
+                currentChunk += word + " ";
+            }
+
+            if (!string.IsNullOrEmpty(currentChunk))
+                chunks.Add(currentChunk.Trim());
+
+            return chunks;
         }
     }
 }

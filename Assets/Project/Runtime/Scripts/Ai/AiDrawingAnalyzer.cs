@@ -28,6 +28,7 @@ namespace Project.Runtime.Scripts.AI
         private const int TEXTURE_SIZE = 512;
         private const int BRUSH_RADIUS = 5;
         private const float PADDING_FACTOR = 0.1f;
+        private const string TTS_URL_FORMAT = "https://translate.google.com/translate_tts?ie=UTF-8&total=1&idx=0&textlen={0}&client=tw-ob&q={1}&tl=nl";
 
         public event Action<string> OnAnalysisCompleted;
         public event Action<string> OnAnalysisFailed;
@@ -38,10 +39,19 @@ namespace Project.Runtime.Scripts.AI
         [Header("References")]
         [SerializeField] private DrawablePaper _drawablePaper;
         [SerializeField] private RawImage _debugDisplayImage;
+        [SerializeField] private AudioSource _audioSource;
 
         private Texture2D _lastGeneratedTexture;
 
         public bool IsAnalyzing { get; private set; }
+
+        private void Awake()
+        {
+            if (_audioSource != null) return;
+            
+            _audioSource = gameObject.AddComponent<AudioSource>();
+            _audioSource.spatialBlend = 0f;
+        }
 
         public void AnalyzeCurrentDrawing(string topic)
         {
@@ -113,12 +123,37 @@ namespace Project.Runtime.Scripts.AI
                     IsAnalyzing = false;
                     yield break;
                 }
-
+                
                 var response = JsonUtility.FromJson<ImageAnalysisResponse>(request.downloadHandler.text);
+                
+                StartCoroutine(PlayVoiceAudioAsync(response.Description));
+
                 OnAnalysisCompleted?.Invoke(response.Description);
             }
 
             IsAnalyzing = false;
+        }
+
+        private IEnumerator PlayVoiceAudioAsync(string text)
+        {
+            if (string.IsNullOrEmpty(text)) yield break;
+
+            var escapedText = UnityWebRequest.EscapeURL(text);
+            var url = string.Format(TTS_URL_FORMAT, text.Length, escapedText);
+
+            using (var request = UnityWebRequestMultimedia.GetAudioClip(url, AudioType.MPEG))
+            {
+                yield return request.SendWebRequest();
+
+                if (request.result != UnityWebRequest.Result.Success) yield break;
+
+                var clip = DownloadHandlerAudioClip.GetContent(request);
+                
+                if (_audioSource == null) yield break;
+                
+                _audioSource.clip = clip;
+                _audioSource.Play();
+            }
         }
 
         private Texture2D GenerateTexture(List<List<Vector3>> strokes)

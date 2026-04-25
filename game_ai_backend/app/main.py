@@ -5,6 +5,7 @@ import base64
 from io import BytesIO
 from quickdraw import QuickDrawData
 from PIL import Image
+import traceback
 
 app = FastAPI(title="Pictionary AI Oponente Rápido")
 
@@ -19,7 +20,7 @@ class ImageRequest(BaseModel):
 
 class AiTextureRequest(BaseModel):
     Category: str 
-    Word: str     
+    Word: str    
 
 class JudgeRequest(BaseModel):
     PlayerImageBase64: str
@@ -34,13 +35,13 @@ def hello_test():
 @app.post("/analyze-drawing")
 def analyze_drawing(request: ImageRequest):
     prompt = (
-        f"Act as a sassy and sarcastic player in a Pictionary game. "
-        f"The image is a simple doodle drawn by a player trying to draw something related to the topic '{request.Topic}'. "
+        f"Act as the charismatic, slightly sarcastic host of the hit game show 'Sketchy Business'. "
+        f"The image is a simple doodle drawn by a player trying to draw '{request.Topic}'. "
         f"Rules: "
-        f"1. Start by making ONE very short, funny 'roast' (a sarcastic comment) about how bad, chaotic, or weird the player's drawing skills are. "
-        f"2. After the roast, guess what the player was actually trying to draw within the topic '{request.Topic}'. "
-        f"3. Keep your response short (max 10 words), direct, and write it in English."
-        f"4. You MUST end your response by putting your final, single-word guess inside square brackets, exactly like this: [word]."
+        f"1. Start by making ONE very short, funny 'roast' about their drawing skills. "
+        f"2. After the roast, guess what they were actually trying to draw. "
+        f"3. Keep your response short (max 10 words), direct, and write it in English. "
+        f"4. You MUST end your response by putting your final, single-word guess inside square brackets: [word]."
     )
 
     try:
@@ -63,20 +64,21 @@ def analyze_drawing(request: ImageRequest):
         }
         
     except Exception as e:
-        erro = f"Ocorreu um erro a analisar o desenho: {str(e)}"
-        print(erro)
+        print("\n--- ERRO AO ANALISAR DESENHO ---")
+        traceback.print_exc()
+        print("--------------------------------\n")
         return {
-            "Description": erro
+            "Description": f"Ocorreu um erro a analisar o desenho: {str(e)}"
         }
     
 @app.post("/judge-round")
 def judge_round(request: JudgeRequest):
     prompt = (
-        f"Act as a sassy and sarcastic Pictionary judge. "
-        f"The topic is '{request.Topic}' and the target word both players had to draw is '{request.Word}'. "
-        f"You will see two images: Image 1 is the Player's drawing. Image 2 is the AI's drawing. "
+        f"Act as the charismatic host and brutal sole judge of the game show 'Sketchy Business'. "
+        f"The target word both players had to draw is '{request.Word}'. "
+        f"Image 1 is the Player's drawing. Image 2 is the AI's drawing. "
         f"Rules: "
-        f"1. Roast the Player's drawing (Image 1) and then the AI's drawing (Image 2) in one short brutal sentence (max 10 words each). "
+        f"1. As the judge, roast the Player's drawing and the AI's drawing in one short, cool sentence (max 12 words). "
         f"2. Decide who drew the '{request.Word}' better. "
         f"3. You MUST format your response EXACTLY as follows, replacing the content in the angle brackets:\n"
         f"Feedback: <your roast here>\n"
@@ -85,23 +87,28 @@ def judge_round(request: JudgeRequest):
 
     try:
         print("O LLaVA está a avaliar ambas as imagens para decidir o vencedor...")
+        
+        # Salvaguarda: limpar possíveis prefixos das strings base64 caso existam
+        p_b64 = request.PlayerImageBase64.replace("data:image/png;base64,", "")
+        a_b64 = request.AiImageBase64.replace("data:image/png;base64,", "")
+
         resposta = ollama.chat(
             model='llava', 
             messages=[
                 {
                     'role': 'user',
                     'content': prompt,
-                    'images': [request.PlayerImageBase64, request.AiImageBase64]
+                    'images': [p_b64, a_b64]
                 }
             ]
         )
+        
         decisao = resposta['message']['content']
         print(f"Resposta Bruta do Juiz: {decisao}")
         
         feedback_texto = decisao
         vencedor_final = "None"
         
-        # Faz o parse da resposta baseada no formato exigido
         if "Winner:" in decisao:
             partes = decisao.split("Winner:")
             feedback_texto = partes[0].replace("Feedback:", "").strip()
@@ -112,7 +119,6 @@ def judge_round(request: JudgeRequest):
             elif "ai" in vencedor_raw:
                 vencedor_final = "AI"
         else:
-            # Fallback caso a IA não obedeça ao formato estrito
             feedback_texto = decisao.replace("[Player]", "").replace("[AI]", "").strip()
             if "player" in decisao.lower():
                 vencedor_final = "Player"
@@ -122,15 +128,17 @@ def judge_round(request: JudgeRequest):
         print(f"Feedback limpo para o TTS: {feedback_texto}")
         print(f"Vencedor da Ronda: {vencedor_final}")
         
-        # Agora retorna o feedback limpo e quem ganhou em variáveis separadas
         return {
             "Result": feedback_texto,
             "Winner": vencedor_final
         }
         
     except Exception as e:
+        print("\n--- ERRO DETALHADO NO JULGAMENTO ---")
+        traceback.print_exc()
+        print("------------------------------------\n")
         return {
-            "Result": f"Erro ao julgar a ronda: {str(e)}", 
+            "Result": "I am experiencing technical difficulties judging this round.", 
             "Winner": "None"
         }
 
@@ -142,7 +150,8 @@ def generate_drawing(request: AiTextureRequest):
     try:
         doodle = qd_data.get_drawing(word_to_draw)
         
-        pil_image = doodle.image.resize((384, 384), Image.Resampling.LANCZOS)
+        # Converte a imagem para RGB para evitar problemas com transparências (RGBA) no base64
+        pil_image = doodle.image.convert("RGB").resize((384, 384), Image.Resampling.LANCZOS)
         
         buffered = BytesIO()
         pil_image.save(buffered, format="PNG")
@@ -157,3 +166,26 @@ def generate_drawing(request: AiTextureRequest):
     except Exception as e:
         print(f"Erro a recuperar a imagem: {e}")
         return {"ImageBase64": ""}
+
+@app.get("/generate-intro")
+def generate_intro():
+    prompt = (
+        "Act as the charismatic, slightly sarcastic host and sole judge of the drawing game show 'Sketchy Business'. "
+        "Welcome the audience to 'Sketchy Business'. State clearly: the first player to reach 7 points wins the ultimate cup. "
+        "DO NOT mention any topic, word, or drawing phase yet. Be energetic and slightly sarcastic. Max 20 words. "
+        "Write exactly ONE short sentence to say out loud. "
+        "Do not include quotes, actions, or translations. Just the spoken text in English."
+    )
+
+    try:
+        print("A gerar a introdução do jogo...")
+        resposta = ollama.chat(
+            model='llava',
+            messages=[{'role': 'user', 'content': prompt}]
+        )
+        dialogue = resposta['message']['content'].replace('"', '').strip()
+        print(f"Introdução gerada: {dialogue}")
+        return {"Text": dialogue}
+    except Exception as e:
+        print(f"Erro a gerar introdução: {e}")
+        return {"Text": ""}

@@ -17,15 +17,31 @@ namespace Project.Runtime.Scripts.Systems
 
         public event Action OnTtsCompleted;
 
-        private readonly Queue<string> _speechQueue = new Queue<string>();
-        private bool _isPlaying;
+        private struct TtsMessage
+        {
+            public string Text;
+            public bool IsMain;
+        }
 
-        public void Speak(string text)
+        private readonly List<TtsMessage> _speechQueue = new List<TtsMessage>();
+        private bool _isPlaying;
+        private bool _isCurrentMain;
+
+        public void Speak(string text, bool isMain = true)
         {
             if (string.IsNullOrEmpty(text)) return;
-            
-            _speechQueue.Enqueue(text);
-            
+
+            if (isMain)
+            {
+                _speechQueue.RemoveAll(m => !m.IsMain);
+            }
+            else
+            {
+                if (_isCurrentMain || _speechQueue.Exists(m => m.IsMain)) return;
+            }
+
+            _speechQueue.Add(new TtsMessage { Text = text, IsMain = isMain });
+
             if (!_isPlaying)
                 StartCoroutine(ProcessSpeechQueueAsync());
         }
@@ -36,8 +52,12 @@ namespace Project.Runtime.Scripts.Systems
 
             while (_speechQueue.Count > 0)
             {
-                var text = _speechQueue.Dequeue();
-                var chunks = SplitText(text);
+                var message = _speechQueue[0];
+                _speechQueue.RemoveAt(0);
+
+                _isCurrentMain = message.IsMain;
+
+                var chunks = SplitText(message.Text);
 
                 foreach (var chunk in chunks)
                 {
@@ -67,6 +87,7 @@ namespace Project.Runtime.Scripts.Systems
             }
             
             _isPlaying = false;
+            _isCurrentMain = false;
             OnTtsCompleted?.Invoke();
         }
 

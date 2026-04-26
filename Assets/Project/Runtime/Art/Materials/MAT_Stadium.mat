@@ -21,21 +21,21 @@ Material:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_Name: MAT_Stadium
-  m_Shader: {fileID: 4800000, guid: bee44b4a58655ee4cbff107302a3e131, type: 3}
+  m_Shader: {fileID: 4800000, guid: 71a090e9b5b488349913abe716bb7bc6, type: 3}
   m_Parent: {fileID: 0}
   m_ModifiedSerializedProperties: 0
   m_ValidKeywords:
-  - _CELPRIMARYMODE_SINGLE
-  - _DETAILMAPBLENDINGMODE_MULTIPLY
-  - _GRADIENTSPACE_WORLD
-  - _OUTLINESPACE_SCREEN
-  - _TEXTUREBLENDINGMODE_MULTIPLY
-  m_InvalidKeywords:
   - _DITHERMODE_TEXTURE
   - _FILTERMODE_POINT
   - _LIGHTMODE_LIT
   - _RECEIVESHADOWSMODE_ON
   - _SNAPMODE_VIEW
+  m_InvalidKeywords:
+  - _CELPRIMARYMODE_SINGLE
+  - _DETAILMAPBLENDINGMODE_MULTIPLY
+  - _GRADIENTSPACE_WORLD
+  - _OUTLINESPACE_SCREEN
+  - _TEXTUREBLENDINGMODE_MULTIPLY
   - _UNITYSHADOWMODE_NONE
   - _USE_VERTEX_COLORS_OFF
   m_LightmapFlags: 4

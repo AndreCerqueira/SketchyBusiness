@@ -4,7 +4,7 @@ namespace Project.Runtime.Scripts.Systems
 {
     public class ScoreSystem : MonoBehaviour
     {
-        private const int MAX_SCORE = 7;
+        private const int MAX_SCORE = 5;
         private const string PLAYER_KEY = "Player";
         private const string AI_KEY = "AI";
 

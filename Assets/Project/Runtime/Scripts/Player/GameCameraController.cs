@@ -9,8 +9,17 @@ namespace Project.Runtime.Scripts.Player
         [SerializeField] private CinemachineCamera _mainVirtualCamera;
         
         [Header("Targets")]
+        [SerializeField] private Transform _mainMenuTarget;
         [SerializeField] private Transform _stadiumTarget;
         [SerializeField] private Transform _drawingBoardTarget;
+
+        public void SwitchToMainMenu()
+        {
+            if (_mainVirtualCamera == null || _mainMenuTarget == null) return;
+
+            _mainVirtualCamera.Follow = _mainMenuTarget;
+            _mainVirtualCamera.LookAt = _mainMenuTarget;
+        }
 
         public void SwitchToStadium()
         {

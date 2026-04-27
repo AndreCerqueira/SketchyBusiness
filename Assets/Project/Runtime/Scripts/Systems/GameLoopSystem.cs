@@ -36,7 +36,7 @@ namespace Project.Runtime.Scripts.Systems
         private void Start()
         {
             if (_uiSystem != null) _uiSystem.Initialize();
-            StartGameLoop();
+            if (_cameraController != null) _cameraController.SwitchToMainMenu();
         }
 
         private void OnEnable()
@@ -55,6 +55,20 @@ namespace Project.Runtime.Scripts.Systems
             if (_aiAnalyzer != null) _aiAnalyzer.OnJudgeCompleted -= HandleJudgeCompleted;
         }
 
+        public void StartGame()
+        {
+            if (_skipIntro)
+            {
+                StartCoroutine(PrepareDrawingPhaseAsync());
+                return;
+            }
+
+            if (_cameraController != null) _cameraController.SwitchToStadium();
+            _isWaitingForIntroTts = true;
+            
+            if (_dialogueSystem != null) _dialogueSystem.PlayIntro();
+        }
+
         public void SubmitAndAnalyzeDrawing()
         {
             if (_isPlayerDone) return;
@@ -68,20 +82,6 @@ namespace Project.Runtime.Scripts.Systems
                 _dialogueSystem.PlayPlayerDone();
 
             CheckJudgingCondition();
-        }
-
-        private void StartGameLoop()
-        {
-            if (_skipIntro)
-            {
-                StartCoroutine(PrepareDrawingPhaseAsync());
-                return;
-            }
-
-            if (_cameraController != null) _cameraController.SwitchToStadium();
-            _isWaitingForIntroTts = true;
-            
-            if (_dialogueSystem != null) _dialogueSystem.PlayIntro();
         }
 
         private void HandleTtsCompleted()

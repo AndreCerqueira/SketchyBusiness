@@ -68,7 +68,10 @@ namespace Project.Runtime.Scripts.Systems
         [Header("References")]
         [SerializeField] private TtsSystem _ttsSystem;
         [SerializeField] private AiDialogueSystem _aiDialogueSystem;
-
+        
+        [Header("Timing")]
+        [SerializeField] private float _introSpeechDelay = 2.5f;
+        
         private Coroutine _fillerRoutine;
         private Coroutine _thinkingRoutine;
         private bool _canPlayFiller;
@@ -187,8 +190,16 @@ namespace Project.Runtime.Scripts.Systems
 
         private void HandleIntroDialogueReceived(string text)
         {
-            var speech = string.IsNullOrEmpty(text) ? "Welcome to Sketchy Business! First to seven points takes the win. Let's go!" : text;
-            if (_ttsSystem != null) _ttsSystem.Speak(speech, true);
+            var speech = string.IsNullOrEmpty(text) ? "Welcome to Sketchy Business! I'm your host, and the rules are simple: first to five points wins. Let's get drawing!" : text;
+            StartCoroutine(SpeakIntroWithDelayAsync(speech));
+        }
+        
+        private IEnumerator SpeakIntroWithDelayAsync(string text)
+        {
+            yield return new WaitForSeconds(_introSpeechDelay);
+            
+            if (_ttsSystem != null) 
+                _ttsSystem.Speak(text, true);
         }
     }
 }

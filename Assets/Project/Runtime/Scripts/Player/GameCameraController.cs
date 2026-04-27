@@ -13,6 +13,22 @@ namespace Project.Runtime.Scripts.Player
         [SerializeField] private Transform _stadiumTarget;
         [SerializeField] private Transform _drawingBoardTarget;
 
+        private CinemachineHardLockToTarget _hardLock;
+        private CinemachineRotateWithFollowTarget _rotateHardLock;
+
+        private void Awake()
+        {
+            _hardLock = _mainVirtualCamera.GetComponent<CinemachineHardLockToTarget>();
+            _rotateHardLock = _mainVirtualCamera.GetComponent<CinemachineRotateWithFollowTarget>();
+        }
+
+        public void SetDamping(float damping)
+        {
+            if (_hardLock == null) return;
+            _hardLock.Damping = damping;
+            if (_rotateHardLock != null) _rotateHardLock.Damping = damping;
+        }
+
         public void SwitchToMainMenu()
         {
             if (_mainVirtualCamera == null || _mainMenuTarget == null) return;

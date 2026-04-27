@@ -269,6 +269,7 @@ GameObject:
   - component: {fileID: 8735743185514792330}
   - component: {fileID: 4402940244316341889}
   - component: {fileID: 2945360384908316521}
+  - component: {fileID: 4385968685607744378}
   m_Layer: 5
   m_Name: Button_Play
   m_TagString: Untagged
@@ -378,6 +379,19 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls: []
+--- !u!114 &4385968685607744378
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2431546262212004690}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 777f2a5ff3d4420a8c83b2062cbc0b76, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Project.Runtime.Scripts.UI.StartGameButtonViewUI
+  _gameLoopSystem: {fileID: 0}
 --- !u!1 &3139969931540310051
 GameObject:
   m_ObjectHideFlags: 0
@@ -696,6 +710,7 @@ GameObject:
   - component: {fileID: 733665084724500652}
   - component: {fileID: 7589105682173551375}
   - component: {fileID: 4796006626338418520}
+  - component: {fileID: 3258660868373943421}
   m_Layer: 5
   m_Name: Button_Exit
   m_TagString: Untagged
@@ -744,14 +759,14 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Image
   m_Material: {fileID: 0}
-  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_Color: {r: 0.9528302, g: 0.56181026, b: 0.56181026, a: 1}
   m_RaycastTarget: 1
   m_RaycastPadding: {x: 0, y: 0, z: 0, w: 0}
   m_Maskable: 1
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: f68dbc80c40551240b849547f9c109d3, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 0afc4bf47d576954b9bb40a3317c07e6, type: 3}
   m_Type: 0
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -805,6 +820,18 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls: []
+--- !u!114 &3258660868373943421
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4431036002675226222}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 925cadf4f60440d5888fc8b46847ef58, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Project.Runtime.Scripts.UI.ExitGameButtonViewUI
 --- !u!1 &5401640520987042817
 GameObject:
   m_ObjectHideFlags: 0
@@ -816,7 +843,6 @@ GameObject:
   - component: {fileID: 1736354387240963717}
   - component: {fileID: 7990637120224717358}
   - component: {fileID: 3919655734818954800}
-  - component: {fileID: 7930052603434793254}
   m_Layer: 5
   m_Name: Button_Exit
   m_TagString: Untagged
@@ -832,7 +858,7 @@ RectTransform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 5401640520987042817}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: -0.00031354767}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 0.92378753, y: 0.92378753, z: 0.92378753}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -840,8 +866,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 6.3740387, y: -0.000034332275}
-  m_SizeDelta: {x: 108.08, y: 20.26}
+  m_AnchoredPosition: {x: 8.5, y: -0.4}
+  m_SizeDelta: {x: 95.72, y: 17.94}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &7990637120224717358
 CanvasRenderer:
@@ -881,50 +907,6 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
---- !u!114 &7930052603434793254
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 5401640520987042817}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 4e29b1a8efbd4b44bb3f3716e73f07ff, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Button
-  m_Navigation:
-    m_Mode: 3
-    m_WrapAround: 0
-    m_SelectOnUp: {fileID: 0}
-    m_SelectOnDown: {fileID: 0}
-    m_SelectOnLeft: {fileID: 0}
-    m_SelectOnRight: {fileID: 0}
-  m_Transition: 1
-  m_Colors:
-    m_NormalColor: {r: 1, g: 1, b: 1, a: 1}
-    m_HighlightedColor: {r: 0.9607843, g: 0.9607843, b: 0.9607843, a: 1}
-    m_PressedColor: {r: 0.78431374, g: 0.78431374, b: 0.78431374, a: 1}
-    m_SelectedColor: {r: 0.9607843, g: 0.9607843, b: 0.9607843, a: 1}
-    m_DisabledColor: {r: 0.78431374, g: 0.78431374, b: 0.78431374, a: 0.5019608}
-    m_ColorMultiplier: 1
-    m_FadeDuration: 0.1
-  m_SpriteState:
-    m_HighlightedSprite: {fileID: 0}
-    m_PressedSprite: {fileID: 0}
-    m_SelectedSprite: {fileID: 0}
-    m_DisabledSprite: {fileID: 0}
-  m_AnimationTriggers:
-    m_NormalTrigger: Normal
-    m_HighlightedTrigger: Highlighted
-    m_PressedTrigger: Pressed
-    m_SelectedTrigger: Selected
-    m_DisabledTrigger: Disabled
-  m_Interactable: 1
-  m_TargetGraphic: {fileID: 3919655734818954800}
-  m_OnClick:
-    m_PersistentCalls:
-      m_Calls: []
 --- !u!1 &8343520092361944677
 GameObject:
   m_ObjectHideFlags: 0
@@ -936,7 +918,6 @@ GameObject:
   - component: {fileID: 5998629946877155421}
   - component: {fileID: 3481407801694667738}
   - component: {fileID: 7065856336867387914}
-  - component: {fileID: 5980850733473996708}
   m_Layer: 5
   m_Name: Button_Play
   m_TagString: Untagged
@@ -952,7 +933,7 @@ RectTransform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 8343520092361944677}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: -0.0001443906}
+  m_LocalPosition: {x: 0, y: 0, z: -0}
   m_LocalScale: {x: 0.6464116, y: 0.69767207, z: 0.69767207}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -960,8 +941,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 5.817734, y: -0.3837967}
-  m_SizeDelta: {x: 160, y: 30}
+  m_AnchoredPosition: {x: 4.6, y: -1}
+  m_SizeDelta: {x: 126.97, y: 23.81}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!222 &3481407801694667738
 CanvasRenderer:
@@ -1001,50 +982,6 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
---- !u!114 &5980850733473996708
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8343520092361944677}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 4e29b1a8efbd4b44bb3f3716e73f07ff, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.Button
-  m_Navigation:
-    m_Mode: 3
-    m_WrapAround: 0
-    m_SelectOnUp: {fileID: 0}
-    m_SelectOnDown: {fileID: 0}
-    m_SelectOnLeft: {fileID: 0}
-    m_SelectOnRight: {fileID: 0}
-  m_Transition: 1
-  m_Colors:
-    m_NormalColor: {r: 1, g: 1, b: 1, a: 1}
-    m_HighlightedColor: {r: 0.9607843, g: 0.9607843, b: 0.9607843, a: 1}
-    m_PressedColor: {r: 0.78431374, g: 0.78431374, b: 0.78431374, a: 1}
-    m_SelectedColor: {r: 0.9607843, g: 0.9607843, b: 0.9607843, a: 1}
-    m_DisabledColor: {r: 0.78431374, g: 0.78431374, b: 0.78431374, a: 0.5019608}
-    m_ColorMultiplier: 1
-    m_FadeDuration: 0.1
-  m_SpriteState:
-    m_HighlightedSprite: {fileID: 0}
-    m_PressedSprite: {fileID: 0}
-    m_SelectedSprite: {fileID: 0}
-    m_DisabledSprite: {fileID: 0}
-  m_AnimationTriggers:
-    m_NormalTrigger: Normal
-    m_HighlightedTrigger: Highlighted
-    m_PressedTrigger: Pressed
-    m_SelectedTrigger: Selected
-    m_DisabledTrigger: Disabled
-  m_Interactable: 1
-  m_TargetGraphic: {fileID: 7065856336867387914}
-  m_OnClick:
-    m_PersistentCalls:
-      m_Calls: []
 --- !u!1 &8612201020233565652
 GameObject:
   m_ObjectHideFlags: 0
@@ -1056,6 +993,7 @@ GameObject:
   - component: {fileID: 8029341046186370622}
   - component: {fileID: 3803634029757702743}
   - component: {fileID: 6899433774463450281}
+  - component: {fileID: 1954469283820508165}
   m_Layer: 5
   m_Name: Image
   m_TagString: Untagged
@@ -1120,6 +1058,35 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+--- !u!114 &1954469283820508165
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8612201020233565652}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ef2d19904aafae3438ad431d68335b3d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Project.Runtime.Scripts.Animations.UIAnimationPingPong
+  _enableMovement: 0
+  _movementSpeed: 0.5
+  _movementDistance: 15
+  _movementAxis: 1
+  _enableRotation: 1
+  _rotationSpeed: 1
+  _rotationAngle: 5
+  _rotationAxis: 2
+  _enableScale: 0
+  _scaleSpeed: 2
+  _scaleAmplitude: 0.2
+  _squashAndStretch: 0
+  _scaleAxis: 3
+  _stretchAxis: 1
+  _useRandomStartDelay: 0
+  _minDelay: 0
+  _maxDelay: 2
 --- !u!1 &8629662257316790037
 GameObject:
   m_ObjectHideFlags: 0

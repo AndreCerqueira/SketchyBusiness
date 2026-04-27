@@ -7,7 +7,9 @@ namespace Project.Runtime.Scripts.Systems
 {
     public class GameLoopSystem : MonoBehaviour
     {
-        private const float TRANSITION_DELAY = 2f;
+        private const float TRANSITION_DELAY = 0f;
+        private const float INTRO_DAMPING = 10f;
+        private const float GAME_DAMPING = 2f;
 
         [Header("Debug Settings")]
         [SerializeField] private bool _skipIntro;
@@ -22,6 +24,7 @@ namespace Project.Runtime.Scripts.Systems
         [SerializeField] private GameDialogueSystem _dialogueSystem;
         [SerializeField] private TtsSystem _ttsSystem;
         [SerializeField] private ScoreSystem _scoreSystem;
+        [SerializeField] private ShowAudioSystem _audioSystem;
 
         private bool _isWaitingForIntroTts;
         private bool _isWaitingForTopicTts;
@@ -63,7 +66,14 @@ namespace Project.Runtime.Scripts.Systems
                 return;
             }
 
-            if (_cameraController != null) _cameraController.SwitchToStadium();
+            if (_cameraController != null)
+            {
+                _cameraController.SetDamping(INTRO_DAMPING);
+                _cameraController.SwitchToStadium();
+            }
+
+            if (_audioSystem != null) _audioSystem.PlayIntroTheme();
+            
             _isWaitingForIntroTts = true;
             
             if (_dialogueSystem != null) _dialogueSystem.PlayIntro();
@@ -74,7 +84,12 @@ namespace Project.Runtime.Scripts.Systems
             if (_isPlayerDone) return;
 
             if (_drawablePaper != null) _drawablePaper.CanDraw = false;
-            if (_cameraController != null) _cameraController.SwitchToStadium();
+            
+            if (_cameraController != null)
+            {
+                _cameraController.SetDamping(GAME_DAMPING);
+                _cameraController.SwitchToStadium();
+            }
                 
             _isPlayerDone = true;
 
@@ -113,6 +128,9 @@ namespace Project.Runtime.Scripts.Systems
 
         private IEnumerator PrepareDrawingPhaseAsync()
         {
+            if (_cameraController != null) _cameraController.SetDamping(GAME_DAMPING);
+            if (_audioSystem != null) _audioSystem.PlayTopicSuspense();
+            
             yield return new WaitForSeconds(TRANSITION_DELAY);
 
             _isPlayerDone = false;
@@ -125,6 +143,8 @@ namespace Project.Runtime.Scripts.Systems
             if (_aiTextureDrawer != null) _aiTextureDrawer.ClearPaper();
             if (_drawablePaper != null) _drawablePaper.ClearDrawing();
             if (_cameraController != null) _cameraController.SwitchToDrawingBoard();
+
+            if (_audioSystem != null) _audioSystem.PlayTopicReveal();
 
             if (_drawingSystem != null)
             {
@@ -163,6 +183,8 @@ namespace Project.Runtime.Scripts.Systems
 
             _isJudgingPhase = true;
             
+            if (_audioSystem != null) _audioSystem.PlayJudgingTension();
+            
             if (_dialogueSystem != null)
             {
                 _dialogueSystem.CancelAllDialogues();
@@ -180,6 +202,8 @@ namespace Project.Runtime.Scripts.Systems
         {
             _pendingWinner = winner;
             _isWaitingForJudgeTts = true;
+
+            if (_audioSystem != null) _audioSystem.PlayWinSfx(winner);
 
             if (_dialogueSystem != null)
             {

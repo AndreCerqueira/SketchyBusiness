@@ -40,6 +40,7 @@ Transform:
   - {fileID: 3810896837415432166}
   - {fileID: 2581162095036316077}
   - {fileID: 774833614457772593}
+  - {fileID: 8553741860917293629}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &3946738858591872540
@@ -270,6 +271,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Project.Runtime.Scripts.Player.GameCameraController
   _mainVirtualCamera: {fileID: 0}
+  _mainMenuTarget: {fileID: 0}
   _stadiumTarget: {fileID: 0}
   _drawingBoardTarget: {fileID: 0}
 --- !u!1 &7174484890468302193
@@ -469,6 +471,7 @@ MonoBehaviour:
   _dialogueSystem: {fileID: 8085081535579364767}
   _ttsSystem: {fileID: 5895014843662037775}
   _scoreSystem: {fileID: 8056224438625638046}
+  _audioSystem: {fileID: 0}
 --- !u!1 &7656121243176384404
 GameObject:
   m_ObjectHideFlags: 0
@@ -517,6 +520,60 @@ MonoBehaviour:
   _aiCanvasGroup: {fileID: 0}
   _playerScoreText: {fileID: 0}
   _aiScoreText: {fileID: 0}
+  _playerProgressBar: {fileID: 0}
+  _aiProgressBar: {fileID: 0}
+--- !u!1 &7850330916307131183
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 8553741860917293629}
+  - component: {fileID: 4872031323279084627}
+  m_Layer: 0
+  m_Name: ShowAudioSystem
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &8553741860917293629
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7850330916307131183}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: -5.73902, y: 0, z: -43.36715}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 6992703286288834230}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &4872031323279084627
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7850330916307131183}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7498b75e44c2aa94c9e0ce2b70aa3ea4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Project.Runtime.Scripts.Systems.ShowAudioSystem
+  _musicSource: {fileID: 0}
+  _sfxSource: {fileID: 0}
+  _introTheme: {fileID: 0}
+  _topicSuspense: {fileID: 0}
+  _topicReveal: {fileID: 0}
+  _judgingTension: {fileID: 0}
+  _playerWin: {fileID: 0}
+  _aiWin: {fileID: 0}
 --- !u!1 &8210303492742168811
 GameObject:
   m_ObjectHideFlags: 0

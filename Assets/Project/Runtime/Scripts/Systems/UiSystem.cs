@@ -1,6 +1,7 @@
 ﻿using DG.Tweening;
 using TMPro;
 using UnityEngine;
+using UnityEngine.UI;
 
 namespace Project.Runtime.Scripts.Systems
 {
@@ -9,6 +10,7 @@ namespace Project.Runtime.Scripts.Systems
         private const float FADE_DURATION = 1f;
         private const float PUNCH_DURATION = 0.5f;
         private const float PUNCH_STRENGTH = 0.2f;
+        private const float PROGRESS_DURATION = 0.5f;
 
         [Header("Canvas Groups")]
         [SerializeField] private CanvasGroup _playerCanvasGroup;
@@ -18,6 +20,10 @@ namespace Project.Runtime.Scripts.Systems
         [SerializeField] private TextMeshProUGUI _playerScoreText;
         [SerializeField] private TextMeshProUGUI _aiScoreText;
 
+        [Header("Progress Bars")]
+        [SerializeField] private Image _playerProgressBar;
+        [SerializeField] private Image _aiProgressBar;
+
         public void Initialize()
         {
             if (_playerCanvasGroup != null) _playerCanvasGroup.alpha = 0f;
@@ -25,6 +31,9 @@ namespace Project.Runtime.Scripts.Systems
             
             UpdatePlayerScore(0);
             UpdateAiScore(0);
+
+            if (_playerProgressBar != null) _playerProgressBar.fillAmount = 0f;
+            if (_aiProgressBar != null) _aiProgressBar.fillAmount = 0f;
         }
 
         public void FadeInJudgingUi()
@@ -53,6 +62,22 @@ namespace Project.Runtime.Scripts.Systems
 
             _aiScoreText.text = score.ToString();
             AnimateScore(_aiScoreText.transform);
+        }
+
+        public void UpdatePlayerProgress(int currentScore, int maxScore)
+        {
+            if (_playerProgressBar == null) return;
+
+            var targetFill = (float)currentScore / maxScore;
+            _playerProgressBar.DOFillAmount(targetFill, PROGRESS_DURATION).SetEase(Ease.OutCubic);
+        }
+
+        public void UpdateAiProgress(int currentScore, int maxScore)
+        {
+            if (_aiProgressBar == null) return;
+
+            var targetFill = (float)currentScore / maxScore;
+            _aiProgressBar.DOFillAmount(targetFill, PROGRESS_DURATION).SetEase(Ease.OutCubic);
         }
 
         private void FadeCanvasGroup(CanvasGroup group, float targetAlpha)

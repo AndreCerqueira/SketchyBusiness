@@ -187,7 +187,7 @@ namespace Project.Runtime.Scripts.Systems
 
         private void HandleIntroDialogueReceived(string text)
         {
-            var speech = string.IsNullOrEmpty(text) ? "Welcome to Sketchy Business! First to seven points takes the cup. Let's go!" : text;
+            var speech = string.IsNullOrEmpty(text) ? "Welcome to Sketchy Business! First to seven points takes the win. Let's go!" : text;
             if (_ttsSystem != null) _ttsSystem.Speak(speech, true);
         }
     }

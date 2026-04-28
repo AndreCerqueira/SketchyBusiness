@@ -39,7 +39,6 @@ MonoBehaviour:
     - Helicopter
     - Submarine
     - Truck
-    - Motorcycle
     - Bus
     - Cruise Ship
   - CategoryName: Household Objects

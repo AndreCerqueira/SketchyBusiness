@@ -23242,7 +23242,7 @@ PrefabInstance:
       objectReference: {fileID: 3645655621177094656}
     - target: {fileID: 8056224438625638046, guid: 3f077890b30e5e94da8b521fe1713d42, type: 3}
       propertyPath: _maxScore
-      value: 1
+      value: 5
       objectReference: {fileID: 0}
     - target: {fileID: 8085081535579364767, guid: 3f077890b30e5e94da8b521fe1713d42, type: 3}
       propertyPath: _introSpeechDelay

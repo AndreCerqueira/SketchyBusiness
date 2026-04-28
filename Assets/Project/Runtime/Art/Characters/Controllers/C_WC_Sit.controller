@@ -6,7 +6,7 @@ AnimatorController:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: C_Black_Cat_Sit
+  m_Name: C_WC_Sit
   serializedVersion: 5
   m_AnimatorParameters: []
   m_AnimatorLayers:
@@ -64,7 +64,7 @@ AnimatorState:
   m_MirrorParameterActive: 0
   m_CycleOffsetParameterActive: 0
   m_TimeParameterActive: 0
-  m_Motion: {fileID: 5079523450171249723, guid: f4fc9d3734317984c8ebf0dac4ed8490, type: 3}
+  m_Motion: {fileID: -2230946890804054902, guid: 992e2cf28d65d2f42be49c9301f59b3d, type: 3}
   m_Tag: 
   m_SpeedParameter: 
   m_MirrorParameter: 

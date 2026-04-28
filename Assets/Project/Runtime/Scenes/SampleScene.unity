@@ -22500,6 +22500,18 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 1088433822287395310, guid: 142670c611e5129449ff61790132ff33, type: 3}
+      propertyPath: m_Color.a
+      value: 0.49019608
+      objectReference: {fileID: 0}
+    - target: {fileID: 2029247441687049684, guid: 142670c611e5129449ff61790132ff33, type: 3}
+      propertyPath: m_Color.a
+      value: 0.46666667
+      objectReference: {fileID: 0}
+    - target: {fileID: 3049337892912733696, guid: 142670c611e5129449ff61790132ff33, type: 3}
+      propertyPath: m_Color.a
+      value: 0.47058824
+      objectReference: {fileID: 0}
     - target: {fileID: 3100360959611777525, guid: 142670c611e5129449ff61790132ff33, type: 3}
       propertyPath: _gameLoopSystem
       value: 
@@ -22512,6 +22524,14 @@ PrefabInstance:
       propertyPath: _gameLoopSystem
       value: 
       objectReference: {fileID: 1642540440}
+    - target: {fileID: 4967732612663293083, guid: 142670c611e5129449ff61790132ff33, type: 3}
+      propertyPath: m_Enabled
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 6775404310307612305, guid: 142670c611e5129449ff61790132ff33, type: 3}
+      propertyPath: m_Color.a
+      value: 0.5176471
+      objectReference: {fileID: 0}
     - target: {fileID: 7293284209640575816, guid: 142670c611e5129449ff61790132ff33, type: 3}
       propertyPath: m_LocalPosition.x
       value: 0

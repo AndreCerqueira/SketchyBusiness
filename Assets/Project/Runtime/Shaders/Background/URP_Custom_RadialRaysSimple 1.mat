@@ -37,6 +37,6 @@ Material:
     m_Colors:
     - _BackgroundColor: {r: 0.19450872, g: 0.23735926, b: 0.2924528, a: 1}
     - _OriginPoint: {r: 0.5, g: 1, b: 0, a: 0}
-    - _RayColor: {r: 0.29009438, g: 0.3330713, b: 0.38679248, a: 0.84313726}
+    - _RayColor: {r: 0.34543717, g: 0.420363, b: 0.51572317, a: 0.84313726}
   m_BuildTextureStacks: []
   m_AllowLocking: 1

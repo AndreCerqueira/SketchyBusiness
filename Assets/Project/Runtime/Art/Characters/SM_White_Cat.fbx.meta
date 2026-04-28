@@ -36,11 +36,11 @@ ModelImporter:
     extraUserProperties: []
     clipAnimations:
     - serializedVersion: 16
-      name: Armature.002|Happy
-      takeName: Armature.002|Happy
+      name: Armature.002|SitApplaude (1)
+      takeName: Armature.002|SitApplaude
       internalID: 4646673909178641695
       firstFrame: 0
-      lastFrame: 29
+      lastFrame: 11
       wrapMode: 0
       orientationOffsetY: 0
       level: 0

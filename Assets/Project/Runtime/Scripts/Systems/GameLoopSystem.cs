@@ -31,6 +31,7 @@ namespace Project.Runtime.Scripts.Systems
         [SerializeField] private ShowAudioSystem _audioSystem;
         [SerializeField] private GameOverViewUI _gameOverUI;
         [SerializeField] private ParticleSystem _winParticles;
+        [SerializeField] private AudienceSystem _audienceSystem;
 
         [Header("Animation Handlers")]
         [SerializeField] private ParticipantAnimationHandler _playerAnimationHandler;
@@ -147,10 +148,12 @@ namespace Project.Runtime.Scripts.Systems
                 if (_scoreSystem != null && _scoreSystem.HasGameEnded)
                 {
                     TriggerGameOverAnimations(_pendingWinner);
+                    if (_audienceSystem != null) _audienceSystem.PlayGameOverClaps();
                     return;
                 }
 
                 TriggerParticipantAnimations(_pendingWinner);
+                if (_audienceSystem != null) _audienceSystem.PlayRoundWinClaps();
                 StartCoroutine(PrepareDrawingPhaseAsync());
             }
         }

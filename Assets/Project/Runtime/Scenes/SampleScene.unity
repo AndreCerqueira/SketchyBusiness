@@ -18526,6 +18526,17 @@ Animator:
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorStateOnDisable: 0
   m_WriteDefaultValuesOnDisable: 0
+--- !u!114 &1475002605 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 7449890830869983356, guid: 3f077890b30e5e94da8b521fe1713d42, type: 3}
+  m_PrefabInstance: {fileID: 7064692329489475423}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9dc9924327658ac4e9cec211937004c2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Project.Runtime.Scripts.Systems.AudienceSystem
 --- !u!1001 &1483704246
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -27912,6 +27923,10 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 311126027}
     - target: {fileID: 7236396286940158431, guid: 3f077890b30e5e94da8b521fe1713d42, type: 3}
+      propertyPath: _audienceSystem
+      value: 
+      objectReference: {fileID: 1475002605}
+    - target: {fileID: 7236396286940158431, guid: 3f077890b30e5e94da8b521fe1713d42, type: 3}
       propertyPath: _aiAnimationHandler
       value: 
       objectReference: {fileID: 916271668}
@@ -27923,6 +27938,18 @@ PrefabInstance:
       propertyPath: _presenterAnimationHandler
       value: 
       objectReference: {fileID: 761418326}
+    - target: {fileID: 7449890830869983356, guid: 3f077890b30e5e94da8b521fe1713d42, type: 3}
+      propertyPath: _audienceGroups.Array.size
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 7449890830869983356, guid: 3f077890b30e5e94da8b521fe1713d42, type: 3}
+      propertyPath: '_audienceGroups.Array.data[0]'
+      value: 
+      objectReference: {fileID: 639007029}
+    - target: {fileID: 7449890830869983356, guid: 3f077890b30e5e94da8b521fe1713d42, type: 3}
+      propertyPath: '_audienceGroups.Array.data[1]'
+      value: 
+      objectReference: {fileID: 1588933510}
     - target: {fileID: 7451647906499652644, guid: 3f077890b30e5e94da8b521fe1713d42, type: 3}
       propertyPath: _aiScoreText
       value: 
@@ -27949,7 +27976,7 @@ PrefabInstance:
       objectReference: {fileID: 3645655621177094656}
     - target: {fileID: 8056224438625638046, guid: 3f077890b30e5e94da8b521fe1713d42, type: 3}
       propertyPath: _maxScore
-      value: 1
+      value: 5
       objectReference: {fileID: 0}
     - target: {fileID: 8085081535579364767, guid: 3f077890b30e5e94da8b521fe1713d42, type: 3}
       propertyPath: _introSpeechDelay

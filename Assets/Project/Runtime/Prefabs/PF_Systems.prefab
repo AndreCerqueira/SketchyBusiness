@@ -41,6 +41,7 @@ Transform:
   - {fileID: 2581162095036316077}
   - {fileID: 774833614457772593}
   - {fileID: 8553741860917293629}
+  - {fileID: 6066092024393791652}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &3946738858591872540
@@ -179,6 +180,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::Project.Runtime.Scripts.Systems.GameDialogueSystem
   _ttsSystem: {fileID: 5895014843662037775}
   _aiDialogueSystem: {fileID: 3418106173372614547}
+  _introSpeechDelay: 2.5
 --- !u!1 &5689397973477369383
 GameObject:
   m_ObjectHideFlags: 0
@@ -472,6 +474,12 @@ MonoBehaviour:
   _ttsSystem: {fileID: 5895014843662037775}
   _scoreSystem: {fileID: 8056224438625638046}
   _audioSystem: {fileID: 0}
+  _gameOverUI: {fileID: 0}
+  _winParticles: {fileID: 0}
+  _audienceSystem: {fileID: 0}
+  _playerAnimationHandler: {fileID: 0}
+  _aiAnimationHandler: {fileID: 0}
+  _presenterAnimationHandler: {fileID: 0}
 --- !u!1 &7656121243176384404
 GameObject:
   m_ObjectHideFlags: 0
@@ -566,14 +574,62 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7498b75e44c2aa94c9e0ce2b70aa3ea4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Project.Runtime.Scripts.Systems.ShowAudioSystem
-  _musicSource: {fileID: 0}
+  _musicSourceA: {fileID: 0}
+  _musicSourceB: {fileID: 0}
   _sfxSource: {fileID: 0}
+  _mainMenuMusic: {fileID: 0}
   _introTheme: {fileID: 0}
   _topicSuspense: {fileID: 0}
   _topicReveal: {fileID: 0}
+  _thinkingMusic: {fileID: 0}
   _judgingTension: {fileID: 0}
   _playerWin: {fileID: 0}
   _aiWin: {fileID: 0}
+--- !u!1 &7944669605572212797
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 6066092024393791652}
+  - component: {fileID: 7449890830869983356}
+  m_Layer: 0
+  m_Name: AudienceSystem
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &6066092024393791652
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7944669605572212797}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 6992703286288834230}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &7449890830869983356
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7944669605572212797}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9dc9924327658ac4e9cec211937004c2, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Project.Runtime.Scripts.Systems.AudienceSystem
+  _audienceGroups: []
 --- !u!1 &8210303492742168811
 GameObject:
   m_ObjectHideFlags: 0
@@ -824,4 +880,5 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 12438f2377e342e6a42447c8250bac7c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Project.Runtime.Scripts.Systems.ScoreSystem
+  _maxScore: 5
   _uiSystem: {fileID: 7451647906499652644}

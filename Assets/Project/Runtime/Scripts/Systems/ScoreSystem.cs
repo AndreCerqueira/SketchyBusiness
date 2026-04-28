@@ -1,19 +1,23 @@
-﻿using UnityEngine;
+﻿using System;
+using UnityEngine;
 
 namespace Project.Runtime.Scripts.Systems
 {
     public class ScoreSystem : MonoBehaviour
     {
-        private const int MAX_SCORE = 5;
         private const string PLAYER_KEY = "Player";
         private const string AI_KEY = "AI";
 
+        [SerializeField] private int _maxScore = 5;
+        
         [Header("References")]
         [SerializeField] private UiSystem _uiSystem;
 
         public int PlayerScore { get; private set; }
         public int AiScore { get; private set; }
         public bool HasGameEnded { get; private set; }
+
+        public event Action<string> OnGameEnded;
 
         public void AddPoint(string winner)
         {
@@ -26,7 +30,7 @@ namespace Project.Runtime.Scripts.Systems
                 if (_uiSystem != null)
                 {
                     _uiSystem.UpdatePlayerScore(PlayerScore);
-                    _uiSystem.UpdatePlayerProgress(PlayerScore, MAX_SCORE);
+                    _uiSystem.UpdatePlayerProgress(PlayerScore, _maxScore);
                 }
             }
             else if (winner == AI_KEY)
@@ -36,7 +40,7 @@ namespace Project.Runtime.Scripts.Systems
                 if (_uiSystem != null)
                 {
                     _uiSystem.UpdateAiScore(AiScore);
-                    _uiSystem.UpdateAiProgress(AiScore, MAX_SCORE);
+                    _uiSystem.UpdateAiProgress(AiScore, _maxScore);
                 }
             }
 
@@ -45,10 +49,10 @@ namespace Project.Runtime.Scripts.Systems
 
         private void CheckForWinner(string lastWinner)
         {
-            if (PlayerScore < MAX_SCORE && AiScore < MAX_SCORE) return;
+            if (PlayerScore < _maxScore && AiScore < _maxScore) return;
 
             HasGameEnded = true;
-            Debug.Log($"Game over! Winner: {lastWinner}");
+            OnGameEnded?.Invoke(lastWinner);
         }
     }
 }

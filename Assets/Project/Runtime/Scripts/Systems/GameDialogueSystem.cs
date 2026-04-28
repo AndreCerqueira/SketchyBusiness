@@ -8,8 +8,9 @@ namespace Project.Runtime.Scripts.Systems
     {
         private const float FILLER_MIN_DELAY = 10f;
         private const float FILLER_MAX_DELAY = 20f;
-        private const float THINKING_MIN_DELAY = 3f;
-        private const float THINKING_MAX_DELAY = 6f;
+        private const float THINKING_MIN_DELAY = 5f;
+        private const float THINKING_MAX_DELAY = 8f;
+        private const string PLAYER_KEY = "Player";
 
         private static readonly string[] JUDGING_MESSAGES = 
         {
@@ -44,14 +45,6 @@ namespace Project.Runtime.Scripts.Systems
             "Fast work! But is it good work? We shall see."
         };
 
-        private static readonly string[] AI_DONE_MESSAGES =
-        {
-            "My circuits have already finished the masterpiece. Hurry up!",
-            "The AI is done! Try to keep up, human.",
-            "Perfection takes time, but the AI did it in seconds. Your turn.",
-            "AI finishes first! No pressure, human."
-        };
-
         private static readonly string[] FILLER_MESSAGES =
         {
             "Take your time, but not too much time.",
@@ -63,6 +56,18 @@ namespace Project.Runtime.Scripts.Systems
             "This is truly a test of my patience.",
             "Are you drawing with your eyes closed?",
             "I'm starting to regret my life choices watching this."
+        };
+
+        private static readonly string[] PLAYER_WIN_MESSAGES =
+        {
+            "The human actually won! This is another episode of Sketchy Business, hope you liked it, and see you next time!",
+            "Against all odds, the human takes the crown! That was another episode of Sketchy Business, hope you enjoyed it, and see you next time!"
+        };
+
+        private static readonly string[] AI_WIN_MESSAGES =
+        {
+            "The AI reigns supreme! And that was another episode of Sketchy Business, hope you enjoyed it, and see you next time!",
+            "Superior machine intellect wins again! Thank you for joining us for another episode of Sketchy Business. Hope you liked it, and see you next time!"
         };
 
         [Header("References")]
@@ -97,10 +102,11 @@ namespace Project.Runtime.Scripts.Systems
             _ttsSystem.Speak(msg, true);
         }
 
-        public void PlayAiDone()
+        public void PlayGameOver(string winner)
         {
             if (_ttsSystem == null) return;
-            var msg = AI_DONE_MESSAGES[Random.Range(0, AI_DONE_MESSAGES.Length)];
+            var messages = winner == PLAYER_KEY ? PLAYER_WIN_MESSAGES : AI_WIN_MESSAGES;
+            var msg = messages[Random.Range(0, messages.Length)];
             _ttsSystem.Speak(msg, true);
         }
 

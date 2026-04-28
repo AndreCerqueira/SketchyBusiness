@@ -1,13 +1,15 @@
 ﻿using System.Collections;
 using Project.Runtime.Scripts.AI;
 using Project.Runtime.Scripts.Player;
+using Project.Runtime.Scripts.UI;
 using UnityEngine;
 
 namespace Project.Runtime.Scripts.Systems
 {
     public class GameLoopSystem : MonoBehaviour
     {
-        private const float TRANSITION_DELAY = 0f;
+        private const float START_TRANSITION_DELAY = 0f;
+        private const float ROUND_TRANSITION_DELAY = 2f;
         private const float INTRO_DAMPING = 10f;
         private const float GAME_DAMPING = 2f;
 
@@ -25,6 +27,8 @@ namespace Project.Runtime.Scripts.Systems
         [SerializeField] private TtsSystem _ttsSystem;
         [SerializeField] private ScoreSystem _scoreSystem;
         [SerializeField] private ShowAudioSystem _audioSystem;
+        [SerializeField] private GameOverViewUI _gameOverUI;
+        [SerializeField] private ParticleSystem _winParticles;
 
         private bool _isWaitingForIntroTts;
         private bool _isWaitingForTopicTts;
@@ -32,6 +36,7 @@ namespace Project.Runtime.Scripts.Systems
         private bool _isPlayerDone;
         private bool _isAiDone;
         private bool _isJudgingPhase;
+        private bool _isFirstTransition = true;
         private int _currentRound;
         private string _currentAiBase64;
         private string _pendingWinner;
@@ -48,6 +53,7 @@ namespace Project.Runtime.Scripts.Systems
             if (_ttsSystem != null) _ttsSystem.OnTtsCompleted += HandleTtsCompleted;
             if (_aiTextureDrawer != null) _aiTextureDrawer.OnDrawingRevealed += HandleAiDrawingRevealed;
             if (_aiAnalyzer != null) _aiAnalyzer.OnJudgeCompleted += HandleJudgeCompleted;
+            if (_scoreSystem != null) _scoreSystem.OnGameEnded += HandleGameEnded;
         }
 
         private void OnDisable()
@@ -56,6 +62,7 @@ namespace Project.Runtime.Scripts.Systems
             if (_ttsSystem != null) _ttsSystem.OnTtsCompleted -= HandleTtsCompleted;
             if (_aiTextureDrawer != null) _aiTextureDrawer.OnDrawingRevealed -= HandleAiDrawingRevealed;
             if (_aiAnalyzer != null) _aiAnalyzer.OnJudgeCompleted -= HandleJudgeCompleted;
+            if (_scoreSystem != null) _scoreSystem.OnGameEnded -= HandleGameEnded;
         }
 
         public void StartGame()
@@ -93,9 +100,6 @@ namespace Project.Runtime.Scripts.Systems
                 
             _isPlayerDone = true;
 
-            if (!_isAiDone && _dialogueSystem != null)
-                _dialogueSystem.PlayPlayerDone();
-
             CheckJudgingCondition();
         }
 
@@ -122,8 +126,17 @@ namespace Project.Runtime.Scripts.Systems
                 if (_scoreSystem != null && !string.IsNullOrEmpty(_pendingWinner))
                     _scoreSystem.AddPoint(_pendingWinner);
 
+                if (_scoreSystem != null && _scoreSystem.HasGameEnded) return;
+
                 StartCoroutine(PrepareDrawingPhaseAsync());
             }
+        }
+
+        private void HandleGameEnded(string winner)
+        {
+            if (_winParticles != null) _winParticles.Play();
+            if (_gameOverUI != null) _gameOverUI.Show(winner);
+            if (_dialogueSystem != null) _dialogueSystem.PlayGameOver(winner);
         }
 
         private IEnumerator PrepareDrawingPhaseAsync()
@@ -131,7 +144,9 @@ namespace Project.Runtime.Scripts.Systems
             if (_cameraController != null) _cameraController.SetDamping(GAME_DAMPING);
             if (_audioSystem != null) _audioSystem.PlayTopicSuspense();
             
-            yield return new WaitForSeconds(TRANSITION_DELAY);
+            var delay = _isFirstTransition ? START_TRANSITION_DELAY : ROUND_TRANSITION_DELAY;
+            yield return new WaitForSeconds(delay);
+            _isFirstTransition = false;
 
             _isPlayerDone = false;
             _isAiDone = false;
@@ -170,9 +185,6 @@ namespace Project.Runtime.Scripts.Systems
 
             _currentAiBase64 = base64;
             _isAiDone = true;
-
-            if (!_isPlayerDone && _dialogueSystem != null)
-                _dialogueSystem.PlayAiDone();
 
             CheckJudgingCondition();
         }

@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using Project.Runtime.Scripts.AI;
+using Project.Runtime.Scripts.Animations;
 using Project.Runtime.Scripts.Player;
 using Project.Runtime.Scripts.UI;
 using UnityEngine;
@@ -12,6 +13,7 @@ namespace Project.Runtime.Scripts.Systems
         private const float ROUND_TRANSITION_DELAY = 2f;
         private const float INTRO_DAMPING = 10f;
         private const float GAME_DAMPING = 2f;
+        private const string PLAYER_KEY = "Player";
 
         [Header("Debug Settings")]
         [SerializeField] private bool _skipIntro;
@@ -30,9 +32,15 @@ namespace Project.Runtime.Scripts.Systems
         [SerializeField] private GameOverViewUI _gameOverUI;
         [SerializeField] private ParticleSystem _winParticles;
 
+        [Header("Animation Handlers")]
+        [SerializeField] private ParticipantAnimationHandler _playerAnimationHandler;
+        [SerializeField] private ParticipantAnimationHandler _aiAnimationHandler;
+        [SerializeField] private ParticipantAnimationHandler _presenterAnimationHandler;
+
         private bool _isWaitingForIntroTts;
         private bool _isWaitingForTopicTts;
         private bool _isWaitingForJudgeTts;
+        private bool _isWaitingForGameOverTts;
         private bool _isPlayerDone;
         private bool _isAiDone;
         private bool _isJudgingPhase;
@@ -51,7 +59,11 @@ namespace Project.Runtime.Scripts.Systems
         private void OnEnable()
         {
             if (_drawingSystem != null) _drawingSystem.OnTopicGenerated += HandleTopicGenerated;
-            if (_ttsSystem != null) _ttsSystem.OnTtsCompleted += HandleTtsCompleted;
+            if (_ttsSystem != null) 
+            {
+                _ttsSystem.OnTtsStarted += HandleTtsStarted;
+                _ttsSystem.OnTtsCompleted += HandleTtsCompleted;
+            }
             if (_aiTextureDrawer != null) _aiTextureDrawer.OnDrawingRevealed += HandleAiDrawingRevealed;
             if (_aiAnalyzer != null) _aiAnalyzer.OnJudgeCompleted += HandleJudgeCompleted;
             if (_scoreSystem != null) _scoreSystem.OnGameEnded += HandleGameEnded;
@@ -60,7 +72,11 @@ namespace Project.Runtime.Scripts.Systems
         private void OnDisable()
         {
             if (_drawingSystem != null) _drawingSystem.OnTopicGenerated -= HandleTopicGenerated;
-            if (_ttsSystem != null) _ttsSystem.OnTtsCompleted -= HandleTtsCompleted;
+            if (_ttsSystem != null) 
+            {
+                _ttsSystem.OnTtsStarted -= HandleTtsStarted;
+                _ttsSystem.OnTtsCompleted -= HandleTtsCompleted;
+            }
             if (_aiTextureDrawer != null) _aiTextureDrawer.OnDrawingRevealed -= HandleAiDrawingRevealed;
             if (_aiAnalyzer != null) _aiAnalyzer.OnJudgeCompleted -= HandleJudgeCompleted;
             if (_scoreSystem != null) _scoreSystem.OnGameEnded -= HandleGameEnded;
@@ -87,25 +103,26 @@ namespace Project.Runtime.Scripts.Systems
             if (_dialogueSystem != null) _dialogueSystem.PlayIntro();
         }
 
-        public void SubmitAndAnalyzeDrawing()
+        private void HandleTtsStarted()
         {
-            if (_isPlayerDone) return;
-
-            if (_drawablePaper != null) _drawablePaper.CanDraw = false;
-            
-            if (_cameraController != null)
-            {
-                _cameraController.SetDamping(GAME_DAMPING);
-                _cameraController.SwitchToStadium();
-            }
-                
-            _isPlayerDone = true;
-
-            CheckJudgingCondition();
+            if (_presenterAnimationHandler != null)
+                _presenterAnimationHandler.SetSpeaking(true);
         }
 
         private void HandleTtsCompleted()
         {
+            if (_presenterAnimationHandler != null)
+                _presenterAnimationHandler.SetSpeaking(false);
+
+            if (_isWaitingForGameOverTts)
+            {
+                _isWaitingForGameOverTts = false;
+                
+                if (_ttsSystem != null) _ttsSystem.TurnOff();
+                
+                return;
+            }
+
             if (_isWaitingForIntroTts)
             {
                 _isWaitingForIntroTts = false;
@@ -127,17 +144,48 @@ namespace Project.Runtime.Scripts.Systems
                 if (_scoreSystem != null && !string.IsNullOrEmpty(_pendingWinner))
                     _scoreSystem.AddPoint(_pendingWinner);
 
-                if (_scoreSystem != null && _scoreSystem.HasGameEnded) return;
+                if (_scoreSystem != null && _scoreSystem.HasGameEnded)
+                {
+                    TriggerGameOverAnimations(_pendingWinner);
+                    return;
+                }
 
+                TriggerParticipantAnimations(_pendingWinner);
                 StartCoroutine(PrepareDrawingPhaseAsync());
             }
         }
 
+        public void SubmitAndAnalyzeDrawing()
+        {
+            if (_isPlayerDone) return;
+
+            if (_drawablePaper != null) _drawablePaper.CanDraw = false;
+            
+            if (_cameraController != null)
+            {
+                _cameraController.SetDamping(GAME_DAMPING);
+                _cameraController.SwitchToStadium();
+            }
+                
+            _isPlayerDone = true;
+
+            CheckJudgingCondition();
+        }
+
         private void HandleGameEnded(string winner)
         {
+            _pendingWinner = winner;
+
             if (_winParticles != null) _winParticles.Play();
             if (_gameOverUI != null) _gameOverUI.Show(winner);
-            if (_dialogueSystem != null) _dialogueSystem.PlayGameOver(winner);
+            
+            if (_dialogueSystem != null)
+            {
+                _dialogueSystem.CancelAllDialogues();
+                _dialogueSystem.PlayGameOver(winner);
+            }
+
+            _isWaitingForGameOverTts = true;
         }
 
         private IEnumerator PrepareDrawingPhaseAsync()
@@ -222,6 +270,38 @@ namespace Project.Runtime.Scripts.Systems
             {
                 _dialogueSystem.StopThinkingFiller();
                 _dialogueSystem.PlayJudgeFeedback(feedback);
+            }
+        }
+
+        private void TriggerParticipantAnimations(string winner)
+        {
+            if (_playerAnimationHandler == null || _aiAnimationHandler == null) return;
+
+            if (winner == PLAYER_KEY)
+            {
+                _playerAnimationHandler.PlayHappy();
+                _aiAnimationHandler.PlaySad();
+            }
+            else
+            {
+                _playerAnimationHandler.PlaySad();
+                _aiAnimationHandler.PlayHappy();
+            }
+        }
+
+        private void TriggerGameOverAnimations(string winner)
+        {
+            if (_playerAnimationHandler == null || _aiAnimationHandler == null) return;
+
+            if (winner == PLAYER_KEY)
+            {
+                _playerAnimationHandler.SetVictoryLoop(true);
+                _aiAnimationHandler.SetSadLoop(true);
+            }
+            else
+            {
+                _aiAnimationHandler.SetVictoryLoop(true);
+                _playerAnimationHandler.SetSadLoop(true);
             }
         }
     }

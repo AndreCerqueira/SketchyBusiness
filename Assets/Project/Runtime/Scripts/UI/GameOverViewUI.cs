@@ -3,6 +3,7 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.SceneManagement;
+using MoreMountains.Feedbacks;
 
 namespace Project.Runtime.Scripts.UI
 {
@@ -26,6 +27,9 @@ namespace Project.Runtime.Scripts.UI
         [SerializeField] private float _initialDelay = 2.0f;
         [SerializeField] private float _fadeDuration = 1.5f;
         [SerializeField] private float _textAnimationInterval = 0.3f;
+
+        [Header("Feedbacks")]
+        [SerializeField] private MMF_Player _reloadFeedback;
 
         private CanvasGroup _canvasGroup;
         private bool _canRestart;
@@ -91,8 +95,7 @@ namespace Project.Runtime.Scripts.UI
             _canRestart = false;
             DOTween.KillAll();
             
-            var currentSceneIndex = SceneManager.GetActiveScene().buildIndex;
-            SceneManager.LoadScene(currentSceneIndex);
+            _reloadFeedback?.PlayFeedbacks();
         }
     }
 }

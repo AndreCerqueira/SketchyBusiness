@@ -15,6 +15,7 @@ namespace Project.Runtime.Scripts.Systems
         [Header("Audio")]
         [SerializeField] private AudioSource _audioSource;
 
+        public event Action OnTtsStarted;
         public event Action OnTtsCompleted;
 
         private struct TtsMessage
@@ -32,13 +33,8 @@ namespace Project.Runtime.Scripts.Systems
             if (string.IsNullOrEmpty(text)) return;
 
             if (isMain)
-            {
                 _speechQueue.RemoveAll(m => !m.IsMain);
-            }
-            else
-            {
-                if (_isCurrentMain || _speechQueue.Exists(m => m.IsMain)) return;
-            }
+            else if (_isCurrentMain || _speechQueue.Exists(m => m.IsMain)) return;
 
             _speechQueue.Add(new TtsMessage { Text = text, IsMain = isMain });
 
@@ -46,9 +42,23 @@ namespace Project.Runtime.Scripts.Systems
                 StartCoroutine(ProcessSpeechQueueAsync());
         }
 
+        public void TurnOff()
+        {
+            StopAllCoroutines();
+            _speechQueue.Clear();
+            _isPlaying = false;
+            _isCurrentMain = false;
+
+            if (_audioSource != null)
+                _audioSource.Stop();
+
+            enabled = false;
+        }
+
         private IEnumerator ProcessSpeechQueueAsync()
         {
             _isPlaying = true;
+            OnTtsStarted?.Invoke();
 
             while (_speechQueue.Count > 0)
             {

@@ -54,9 +54,6 @@ namespace Project.Runtime.Scripts.UI
             if (_audioSource != null && _victorySound != null)
                 _audioSource.PlayOneShot(_victorySound);
             
-            _thankYouText.text = "<rainb>Obrigado por jogar!</rainb>";
-            _restartInstructionText.text = "<fade>Clique em qualquer lado para jogar de novo</fade>";
-            
             var sequence = DOTween.Sequence();
             
             sequence.AppendInterval(_initialDelay);
@@ -79,7 +76,7 @@ namespace Project.Runtime.Scripts.UI
             if (ColorUtility.TryParseHtmlString(hexColor, out var color))
                 _winnerTitleText.color = color;
 
-            _winnerTitleText.text = $"<wave>{winner} Ganhou!</wave>";
+            _winnerTitleText.text = $"<wave a=0.1 f=1>{winner} Won!</wave>";
         }
 
         private Tween AnimateTextScale(TextMeshProUGUI text)

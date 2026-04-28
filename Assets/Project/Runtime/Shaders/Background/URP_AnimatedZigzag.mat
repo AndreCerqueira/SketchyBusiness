@@ -44,7 +44,7 @@ Material:
     m_Colors:
     - _BackgroundColor: {r: 0, g: 0, b: 0, a: 1}
     - _CircleColor: {r: 1, g: 1, b: 1, a: 1}
-    - _Color1: {r: 0.2901961, g: 0.33333334, b: 0.3882353, a: 0.84313726}
+    - _Color1: {r: 0.34509805, g: 0.41960785, b: 0.5176471, a: 0.84313726}
     - _Color2: {r: 0.19607843, g: 0.23921569, b: 0.29411766, a: 1}
     - _EndPoint: {r: 0, g: 0, b: 0, a: 0}
     - _StartPoint: {r: 1, g: 1, b: 0, a: 0}

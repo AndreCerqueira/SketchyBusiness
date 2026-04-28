@@ -45,6 +45,7 @@ namespace Project.Runtime.Scripts.Systems
         {
             if (_uiSystem != null) _uiSystem.Initialize();
             if (_cameraController != null) _cameraController.SwitchToMainMenu();
+            if (_audioSystem != null) _audioSystem.PlayMainMenuMusic();
         }
 
         private void OnEnable()
@@ -195,7 +196,7 @@ namespace Project.Runtime.Scripts.Systems
 
             _isJudgingPhase = true;
             
-            if (_audioSystem != null) _audioSystem.PlayJudgingTension();
+            if (_audioSystem != null) _audioSystem.PlayThinkingMusic();
             
             if (_dialogueSystem != null)
             {

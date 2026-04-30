@@ -1,4 +1,5 @@
 from fastapi import FastAPI
+import uvicorn
 from pydantic import BaseModel
 import ollama
 import base64
@@ -189,3 +190,9 @@ def generate_intro():
     except Exception as e:
         print(f"Erro a gerar introdução: {e}")
         return {"Text": ""}
+    
+
+if __name__ == "__main__":
+    print("A iniciar o servidor FastAPI...")
+    # Podes mudar a porta (8000) se for necessário
+    uvicorn.run(app, host="127.0.0.1", port=8000)

@@ -6,7 +6,8 @@ namespace Project.Runtime.Scripts.Animations
 {
     public class CameraFocusSwitchSystem : MonoBehaviour
     {
-        private const float SWITCH_INTERVAL = 1.5f;
+        private const float INITIAL_DELAY = 2f;
+        private const float SWITCH_INTERVAL = 3f;
 
         [Header("References")]
         [SerializeField] private CinemachineCamera _vcam;
@@ -16,7 +17,6 @@ namespace Project.Runtime.Scripts.Animations
         private float _originalPositionDamping;
         private float _originalRotationDamping;
         private Sequence _switchSequence;
-
         private CinemachineHardLockToTarget _positionControl;
         private CinemachineRotateWithFollowTarget _rotationControl;
 
@@ -34,7 +34,6 @@ namespace Project.Runtime.Scripts.Animations
 
             _originalTarget = _vcam.LookAt;
 
-            // Guarda e retira o damping
             if (_positionControl != null)
             {
                 _originalPositionDamping = _positionControl.Damping;
@@ -48,6 +47,7 @@ namespace Project.Runtime.Scripts.Animations
             }
 
             _switchSequence = DOTween.Sequence();
+            _switchSequence.AppendInterval(INITIAL_DELAY);
             _switchSequence.AppendCallback(SwitchToRandomTarget);
             _switchSequence.AppendInterval(SWITCH_INTERVAL);
             _switchSequence.SetLoops(-1);
@@ -61,7 +61,6 @@ namespace Project.Runtime.Scripts.Animations
             _vcam.Follow = _originalTarget;
             _vcam.LookAt = _originalTarget;
 
-            // Restaura o damping original
             if (_positionControl != null)
                 _positionControl.Damping = _originalPositionDamping;
 
@@ -72,6 +71,7 @@ namespace Project.Runtime.Scripts.Animations
         private void SwitchToRandomTarget()
         {
             var randomTarget = _focusTargets[Random.Range(0, _focusTargets.Length)];
+
             if (randomTarget != null)
             {
                 _vcam.Follow = randomTarget;

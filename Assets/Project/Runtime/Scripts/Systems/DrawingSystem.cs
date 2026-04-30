@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using Project.Runtime.Scripts.Data;
 using UnityEngine;
 using Random = UnityEngine.Random;
@@ -7,8 +9,12 @@ namespace Project.Runtime.Scripts.Systems
 {
     public class DrawingSystem : MonoBehaviour
     {
+        private const int MAX_HISTORY_SIZE = 20;
+
         [Header("References")]
         [SerializeField] private DrawingCategoryDatabaseSO _categoryDatabase;
+
+        private readonly Queue<string> _recentWords = new Queue<string>();
 
         public bool HasActiveTopic { get; private set; }
         public string CurrentCategory { get; private set; }
@@ -26,13 +32,22 @@ namespace Project.Runtime.Scripts.Systems
 
             if (category.Words == null || category.Words.Count == 0) return;
 
-            var wordIndex = Random.Range(0, category.Words.Count);
-            
+            var availableWords = category.Words.Where(word => !_recentWords.Contains(word)).ToList();
+
+            if (availableWords.Count == 0)
+                availableWords = category.Words;
+
+            var wordIndex = Random.Range(0, availableWords.Count);
+
             CurrentCategory = category.CategoryName;
-            CurrentWord = category.Words[wordIndex];
+            CurrentWord = availableWords[wordIndex];
             HasActiveTopic = true;
 
-            Debug.Log($"New Topic: {CurrentCategory} | Word: {CurrentWord}");
+            _recentWords.Enqueue(CurrentWord);
+
+            if (_recentWords.Count > MAX_HISTORY_SIZE)
+                _recentWords.Dequeue();
+
             OnTopicGenerated?.Invoke(CurrentCategory, CurrentWord);
         }
     }

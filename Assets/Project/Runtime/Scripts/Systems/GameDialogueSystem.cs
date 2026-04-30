@@ -8,8 +8,8 @@ namespace Project.Runtime.Scripts.Systems
     {
         private const float FILLER_MIN_DELAY = 10f;
         private const float FILLER_MAX_DELAY = 20f;
-        private const float THINKING_MIN_DELAY = 5f;
-        private const float THINKING_MAX_DELAY = 8f;
+        private const float THINKING_MIN_DELAY = 8f;
+        private const float THINKING_MAX_DELAY = 15f;
         private const string PLAYER_KEY = "Player";
 
         private static readonly string[] JUDGING_MESSAGES = 
@@ -28,13 +28,66 @@ namespace Project.Runtime.Scripts.Systems
 
         private static readonly string[] THINKING_MESSAGES = 
         {
-            "Hmm...", "I see, I see...", "My god...", "Well... this is certainly something.",
-            "Interesting approach...", "Oh boy...", "Wait, what exactly is that?",
-            "Let me put my glasses on for this one.", "Yikes...", "Uh huh...",
-            "Wow... just, wow.", "Okay, let me process this.", "Is this supposed to be modern art?",
-            "Fascinating... and deeply confusing.", "Alright, let's take a closer look.",
-            "Oh, sweet merciful heavens...", "Hmm... intriguing.", "Good grief.",
-            "Let me think about this...", "Oof..."
+            "Hmm...",
+            "I see, I see...",
+            "My god...",
+            "Well... this is certainly something.",
+            "Interesting approach...",
+            "Oh boy...",
+            "Wait, what exactly is that?",
+            "Let me put my glasses on for this one.",
+            "Yikes...",
+            "Uh huh...",
+            "Wow... just, wow.",
+            "Okay, let me process this.",
+            "Is this supposed to be modern art?",
+            "Fascinating... and deeply confusing.",
+            "Alright, let's take a closer look.",
+            "Oh, sweet merciful heavens...",
+            "Hmm... intriguing.",
+            "Good grief.",
+            "Let me think about this...",
+            "Oof...",
+            "Alright...",
+            "Okay...",
+            "Sure...",
+            "Right...",
+            "Let's see...",
+            "I'm looking...",
+            "Give me a second.",
+            "Just a moment.",
+            "Let me check.",
+            "What do we have here?",
+            "This is... different.",
+            "Aha.",
+            "Mhm.",
+            "Yeah...",
+            "I guess...",
+            "I mean...",
+            "Well then.",
+            "Okay then.",
+            "Let me see.",
+            "Let's find out.",
+            "Hold on.",
+            "Let me examine this.",
+            "Taking a look.",
+            "Oh.",
+            "Oh my.",
+            "Dear me.",
+            "Let me process.",
+            "Thinking...",
+            "Looking closely.",
+            "Very well.",
+            "Not bad...",
+            "I see.",
+            "Got it.",
+            "Understood.",
+            "Let's review.",
+            "Reviewing...",
+            "Analyzing...",
+            "Wait.",
+            "Interesting.",
+            "Oh dear."
         };
 
         private static readonly string[] PLAYER_DONE_MESSAGES =
@@ -196,7 +249,7 @@ namespace Project.Runtime.Scripts.Systems
 
         private void HandleIntroDialogueReceived(string text)
         {
-            var speech = string.IsNullOrEmpty(text) ? "Welcome to Sketchy Business! I'm your host, and the rules are simple: first to five points wins. Let's get drawing!" : text;
+            var speech = string.IsNullOrEmpty(text) ? "Welcome to Sketchy Business! I'm your host, and the rules are simple: first to three points wins. Let's get drawing!" : text;
             StartCoroutine(SpeakIntroWithDelayAsync(speech));
         }
         

@@ -32,6 +32,7 @@ namespace Project.Runtime.Scripts.Systems
         [SerializeField] private GameOverViewUI _gameOverUI;
         [SerializeField] private ParticleSystem _winParticles;
         [SerializeField] private AudienceSystem _audienceSystem;
+        [SerializeField] private CameraFocusSwitchSystem _cameraFocusSystem;
 
         [Header("Animation Handlers")]
         [SerializeField] private ParticipantAnimationHandler _playerAnimationHandler;
@@ -60,7 +61,7 @@ namespace Project.Runtime.Scripts.Systems
         private void OnEnable()
         {
             if (_drawingSystem != null) _drawingSystem.OnTopicGenerated += HandleTopicGenerated;
-            if (_ttsSystem != null) 
+            if (_ttsSystem != null)
             {
                 _ttsSystem.OnTtsStarted += HandleTtsStarted;
                 _ttsSystem.OnTtsCompleted += HandleTtsCompleted;
@@ -73,7 +74,7 @@ namespace Project.Runtime.Scripts.Systems
         private void OnDisable()
         {
             if (_drawingSystem != null) _drawingSystem.OnTopicGenerated -= HandleTopicGenerated;
-            if (_ttsSystem != null) 
+            if (_ttsSystem != null)
             {
                 _ttsSystem.OnTtsStarted -= HandleTtsStarted;
                 _ttsSystem.OnTtsCompleted -= HandleTtsCompleted;
@@ -98,9 +99,9 @@ namespace Project.Runtime.Scripts.Systems
             }
 
             if (_audioSystem != null) _audioSystem.PlayIntroTheme();
-            
+
             _isWaitingForIntroTts = true;
-            
+
             if (_dialogueSystem != null) _dialogueSystem.PlayIntro();
         }
 
@@ -118,9 +119,7 @@ namespace Project.Runtime.Scripts.Systems
             if (_isWaitingForGameOverTts)
             {
                 _isWaitingForGameOverTts = false;
-                
                 if (_ttsSystem != null) _ttsSystem.TurnOff();
-                
                 return;
             }
 
@@ -141,7 +140,7 @@ namespace Project.Runtime.Scripts.Systems
             if (_isWaitingForJudgeTts)
             {
                 _isWaitingForJudgeTts = false;
-                
+
                 if (_scoreSystem != null && !string.IsNullOrEmpty(_pendingWinner))
                     _scoreSystem.AddPoint(_pendingWinner);
 
@@ -163,13 +162,13 @@ namespace Project.Runtime.Scripts.Systems
             if (_isPlayerDone) return;
 
             if (_drawablePaper != null) _drawablePaper.CanDraw = false;
-            
+
             if (_cameraController != null)
             {
                 _cameraController.SetDamping(GAME_DAMPING);
                 _cameraController.SwitchToStadium();
             }
-                
+
             _isPlayerDone = true;
 
             CheckJudgingCondition();
@@ -181,7 +180,7 @@ namespace Project.Runtime.Scripts.Systems
 
             if (_winParticles != null) _winParticles.Play();
             if (_gameOverUI != null) _gameOverUI.Show(winner);
-            
+
             if (_dialogueSystem != null)
             {
                 _dialogueSystem.CancelAllDialogues();
@@ -195,7 +194,7 @@ namespace Project.Runtime.Scripts.Systems
         {
             if (_cameraController != null) _cameraController.SetDamping(GAME_DAMPING);
             if (_audioSystem != null) _audioSystem.PlayTopicSuspense();
-            
+
             var delay = _isFirstTransition ? START_TRANSITION_DELAY : ROUND_TRANSITION_DELAY;
             yield return new WaitForSeconds(delay);
             _isFirstTransition = false;
@@ -217,10 +216,10 @@ namespace Project.Runtime.Scripts.Systems
             {
                 _currentRound++;
                 _drawingSystem.GenerateNewTopic();
-                
+
                 if (_drawablePaper != null) _drawablePaper.CanDraw = true;
                 _isWaitingForTopicTts = true;
-                
+
                 if (_dialogueSystem != null)
                     _dialogueSystem.PlayTopicAnnouncement(_currentRound, _drawingSystem.CurrentCategory, _drawingSystem.CurrentWord);
             }
@@ -246,15 +245,17 @@ namespace Project.Runtime.Scripts.Systems
             if (!_isPlayerDone || !_isAiDone || _isJudgingPhase) return;
 
             _isJudgingPhase = true;
-            
+
             if (_audioSystem != null) _audioSystem.PlayThinkingMusic();
-            
+
             if (_dialogueSystem != null)
             {
                 _dialogueSystem.CancelAllDialogues();
                 _dialogueSystem.PlayJudgingIntro();
                 _dialogueSystem.StartThinkingFiller();
             }
+
+            if (_cameraFocusSystem != null) _cameraFocusSystem.StartRandomFocusSwitches();
 
             if (_uiSystem != null) _uiSystem.FadeInJudgingUi();
 
@@ -266,6 +267,8 @@ namespace Project.Runtime.Scripts.Systems
         {
             _pendingWinner = winner;
             _isWaitingForJudgeTts = true;
+
+            if (_cameraFocusSystem != null) _cameraFocusSystem.StopFocusSwitches();
 
             if (_audioSystem != null) _audioSystem.PlayWinSfx(winner);
 

@@ -44,6 +44,7 @@ namespace Project.Runtime.Scripts.AI
         private const int TEXTURE_SIZE = 512;
         private const int BRUSH_RADIUS = 5;
         private const float PADDING_FACTOR = 0.1f;
+        private const float MINIMUM_JUDGE_TIME = 6f;
 
         public event Action<string> OnAnalysisCompleted;
         public event Action<string, string> OnJudgeCompleted;
@@ -67,7 +68,7 @@ namespace Project.Runtime.Scripts.AI
             if (_drawablePaper == null) return;
 
             var strokes = ExtractStrokes();
-            
+
             if (strokes.Count == 0) return;
 
             StartCoroutine(RasterizeAndAnalyzeAsync(strokes, topic));
@@ -79,7 +80,7 @@ namespace Project.Runtime.Scripts.AI
             if (_drawablePaper == null) return;
 
             var strokes = ExtractStrokes();
-            
+
             StartCoroutine(RasterizeAndJudgeAsync(strokes, aiBase64, topic, word));
         }
 
@@ -105,20 +106,20 @@ namespace Project.Runtime.Scripts.AI
             IsAnalyzing = true;
 
             var base64Image = PrepareTextureBase64(strokes);
-            
-            var requestData = new ImageAnalysisRequest 
-            { 
+
+            var requestData = new ImageAnalysisRequest
+            {
                 ImageBase64 = base64Image,
                 Topic = topic
             };
-            
+
             var jsonPayload = JsonUtility.ToJson(requestData);
 
             using (var request = new UnityWebRequest(_analyzeEndpoint, POST_METHOD))
             {
                 var uploadHandler = new UploadHandlerRaw(Encoding.UTF8.GetBytes(jsonPayload));
                 uploadHandler.contentType = CONTENT_TYPE;
-                
+
                 request.uploadHandler = uploadHandler;
                 request.downloadHandler = new DownloadHandlerBuffer();
 
@@ -130,9 +131,9 @@ namespace Project.Runtime.Scripts.AI
                     IsAnalyzing = false;
                     yield break;
                 }
-                
+
                 var response = JsonUtility.FromJson<ImageAnalysisResponse>(request.downloadHandler.text);
-                
+
                 OnAnalysisCompleted?.Invoke(response.Description);
             }
 
@@ -142,24 +143,25 @@ namespace Project.Runtime.Scripts.AI
         private IEnumerator RasterizeAndJudgeAsync(List<List<Vector3>> strokes, string aiBase64, string topic, string word)
         {
             IsAnalyzing = true;
+            var startTime = Time.time;
 
             var playerBase64Image = PrepareTextureBase64(strokes);
-            
-            var requestData = new JudgeAnalysisRequest 
-            { 
+
+            var requestData = new JudgeAnalysisRequest
+            {
                 PlayerImageBase64 = playerBase64Image,
                 AiImageBase64 = aiBase64,
                 Topic = topic,
                 Word = word
             };
-            
+
             var jsonPayload = JsonUtility.ToJson(requestData);
 
             using (var request = new UnityWebRequest(_judgeEndpoint, POST_METHOD))
             {
                 var uploadHandler = new UploadHandlerRaw(Encoding.UTF8.GetBytes(jsonPayload));
                 uploadHandler.contentType = CONTENT_TYPE;
-                
+
                 request.uploadHandler = uploadHandler;
                 request.downloadHandler = new DownloadHandlerBuffer();
 
@@ -171,10 +173,14 @@ namespace Project.Runtime.Scripts.AI
                     IsAnalyzing = false;
                     yield break;
                 }
-                
+
                 var response = JsonUtility.FromJson<JudgeAnalysisResponse>(request.downloadHandler.text);
-                
-                // O TTS já só recebe a resposta tratada e o vencedor vem isolado na sua própria string
+
+                var elapsedTime = Time.time - startTime;
+
+                if (elapsedTime < MINIMUM_JUDGE_TIME)
+                    yield return new WaitForSeconds(MINIMUM_JUDGE_TIME - elapsedTime);
+
                 OnJudgeCompleted?.Invoke(response.Result, response.Winner);
             }
 
@@ -186,7 +192,7 @@ namespace Project.Runtime.Scripts.AI
             if (_lastGeneratedTexture != null) Destroy(_lastGeneratedTexture);
 
             _lastGeneratedTexture = GenerateTexture(strokes);
-            
+
             if (_debugDisplayImage != null)
             {
                 _debugDisplayImage.texture = _lastGeneratedTexture;
@@ -194,7 +200,7 @@ namespace Project.Runtime.Scripts.AI
             }
 
             var imageBytes = _lastGeneratedTexture.EncodeToPNG();
-            
+
             return Convert.ToBase64String(imageBytes);
         }
 
@@ -248,17 +254,17 @@ namespace Project.Runtime.Scripts.AI
 
             var bounds = new Bounds();
             bounds.SetMinMax(min, max);
-            
+
             return bounds;
         }
 
         private Vector2 MapToPixel(Vector3 point, Bounds bounds)
         {
             var size = bounds.size;
-            
+
             var isFlatX = size.x <= size.y && size.x <= size.z;
             var isFlatY = size.y <= size.x && size.y <= size.z;
-            
+
             float pX, pY, minX, minY, sX, sY;
 
             if (isFlatX)
@@ -273,7 +279,7 @@ namespace Project.Runtime.Scripts.AI
                 minX = bounds.min.x; minY = bounds.min.z;
                 sX = size.x; sY = size.z;
             }
-            else 
+            else
             {
                 pX = point.x; pY = point.y;
                 minX = bounds.min.x; minY = bounds.min.y;
@@ -281,6 +287,7 @@ namespace Project.Runtime.Scripts.AI
             }
 
             var maxDimension = Mathf.Max(sX, sY);
+
             if (maxDimension <= 0.0001f) maxDimension = 1f;
 
             var normalizedX = ((pX - minX) / maxDimension) + ((maxDimension - sX) / (2f * maxDimension));

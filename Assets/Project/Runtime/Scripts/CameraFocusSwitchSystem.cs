@@ -1,5 +1,5 @@
+using System.Collections;
 using UnityEngine;
-using DG.Tweening;
 using Unity.Cinemachine;
 
 namespace Project.Runtime.Scripts.Animations
@@ -13,10 +13,11 @@ namespace Project.Runtime.Scripts.Animations
         [SerializeField] private CinemachineCamera _vcam;
         [SerializeField] private Transform[] _focusTargets;
 
-        private Transform _originalTarget;
+        private Transform _originalFollow;
+        private Transform _originalLookAt;
         private float _originalPositionDamping;
         private float _originalRotationDamping;
-        private Sequence _switchSequence;
+        private Coroutine _switchCoroutine;
         private CinemachineHardLockToTarget _positionControl;
         private CinemachineRotateWithFollowTarget _rotationControl;
 
@@ -32,7 +33,8 @@ namespace Project.Runtime.Scripts.Animations
         {
             if (_vcam == null || _focusTargets == null || _focusTargets.Length == 0) return;
 
-            _originalTarget = _vcam.LookAt;
+            _originalFollow = _vcam.Follow;
+            _originalLookAt = _vcam.LookAt;
 
             if (_positionControl != null)
             {
@@ -46,20 +48,21 @@ namespace Project.Runtime.Scripts.Animations
                 _rotationControl.Damping = 0f;
             }
 
-            _switchSequence = DOTween.Sequence();
-            _switchSequence.AppendInterval(INITIAL_DELAY);
-            _switchSequence.AppendCallback(SwitchToRandomTarget);
-            _switchSequence.AppendInterval(SWITCH_INTERVAL);
-            _switchSequence.SetLoops(-1);
+            if (_switchCoroutine != null) StopCoroutine(_switchCoroutine);
+
+            _switchCoroutine = StartCoroutine(FocusSwitchRoutine());
         }
 
         public void StopFocusSwitches()
         {
-            if (_switchSequence != null)
-                _switchSequence.Kill();
+            if (_switchCoroutine != null)
+            {
+                StopCoroutine(_switchCoroutine);
+                _switchCoroutine = null;
+            }
 
-            _vcam.Follow = _originalTarget;
-            _vcam.LookAt = _originalTarget;
+            _vcam.Follow = _originalFollow;
+            _vcam.LookAt = _originalLookAt;
 
             if (_positionControl != null)
                 _positionControl.Damping = _originalPositionDamping;
@@ -68,14 +71,21 @@ namespace Project.Runtime.Scripts.Animations
                 _rotationControl.Damping = _originalRotationDamping;
         }
 
-        private void SwitchToRandomTarget()
+        private IEnumerator FocusSwitchRoutine()
         {
-            var randomTarget = _focusTargets[Random.Range(0, _focusTargets.Length)];
+            yield return new WaitForSeconds(INITIAL_DELAY);
 
-            if (randomTarget != null)
+            while (true)
             {
-                _vcam.Follow = randomTarget;
-                _vcam.LookAt = randomTarget;
+                var randomTarget = _focusTargets[Random.Range(0, _focusTargets.Length)];
+
+                if (randomTarget != null)
+                {
+                    _vcam.Follow = randomTarget;
+                    _vcam.LookAt = null;
+                }
+
+                yield return new WaitForSeconds(SWITCH_INTERVAL);
             }
         }
     }

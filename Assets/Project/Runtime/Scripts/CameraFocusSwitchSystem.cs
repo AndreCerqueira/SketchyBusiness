@@ -32,7 +32,7 @@ namespace Project.Runtime.Scripts.Animations
         {
             if (_vcam == null || _focusTargets == null || _focusTargets.Length == 0) return;
 
-            _originalTarget = _vcam.TrackingTarget;
+            _originalTarget = _vcam.LookAt;
 
             // Guarda e retira o damping
             if (_positionControl != null)
@@ -58,7 +58,8 @@ namespace Project.Runtime.Scripts.Animations
             if (_switchSequence != null)
                 _switchSequence.Kill();
 
-            _vcam.TrackingTarget = _originalTarget;
+            _vcam.Follow = _originalTarget;
+            _vcam.LookAt = _originalTarget;
 
             // Restaura o damping original
             if (_positionControl != null)
@@ -72,7 +73,10 @@ namespace Project.Runtime.Scripts.Animations
         {
             var randomTarget = _focusTargets[Random.Range(0, _focusTargets.Length)];
             if (randomTarget != null)
-                _vcam.TrackingTarget = randomTarget;
+            {
+                _vcam.Follow = randomTarget;
+                _vcam.LookAt = randomTarget;
+            }
         }
     }
 }

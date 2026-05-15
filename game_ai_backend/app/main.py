@@ -32,45 +32,6 @@ class JudgeRequest(BaseModel):
 @app.get("/hello-test")
 def hello_test():
     return {"response": "Hello! O oponente IA está pronto para jogar e julgar!"}
-
-@app.post("/analyze-drawing")
-def analyze_drawing(request: ImageRequest):
-    prompt = (
-        f"Act as the charismatic, slightly sarcastic host of the hit game show 'Sketchy Business'. "
-        f"The image is a simple doodle drawn by a player trying to draw '{request.Topic}'. "
-        f"Rules: "
-        f"1. Start by making ONE very short, funny 'roast' about their drawing skills. "
-        f"2. After the roast, guess what they were actually trying to draw. "
-        f"3. Keep your response short (max 10 words), direct, and write it in English. "
-        f"4. You MUST end your response by putting your final, single-word guess inside square brackets: [word]."
-    )
-
-    try:
-        print("A processar a imagem do jogador com o LLaVA...")
-        resposta = ollama.chat(
-            model='llava', 
-            messages=[
-                {
-                    'role': 'user',
-                    'content': prompt,
-                    'images': [request.ImageBase64]
-                }
-            ]
-        )
-        descricao = resposta['message']['content']
-        print(f"Resposta do LLaVA: {descricao}")
-
-        return {
-            "Description": descricao
-        }
-        
-    except Exception as e:
-        print("\n--- ERRO AO ANALISAR DESENHO ---")
-        traceback.print_exc()
-        print("--------------------------------\n")
-        return {
-            "Description": f"Ocorreu um erro a analisar o desenho: {str(e)}"
-        }
     
 @app.post("/judge-round")
 def judge_round(request: JudgeRequest):
@@ -167,30 +128,6 @@ def generate_drawing(request: AiTextureRequest):
     except Exception as e:
         print(f"Erro a recuperar a imagem: {e}")
         return {"ImageBase64": ""}
-
-@app.get("/generate-intro")
-def generate_intro():
-    prompt = (
-        "Act as the charismatic, slightly sarcastic host and sole judge of the drawing game show 'Sketchy Business'. "
-        "Welcome the audience to 'Sketchy Business'. State clearly: the first player to reach 7 points wins the ultimate cup. "
-        "DO NOT mention any topic, word, or drawing phase yet. Be energetic and slightly sarcastic. Max 20 words. "
-        "Write exactly ONE short sentence to say out loud. "
-        "Do not include quotes, actions, or translations. Just the spoken text in English."
-    )
-
-    try:
-        print("A gerar a introdução do jogo...")
-        resposta = ollama.chat(
-            model='llava',
-            messages=[{'role': 'user', 'content': prompt}]
-        )
-        dialogue = resposta['message']['content'].replace('"', '').strip()
-        print(f"Introdução gerada: {dialogue}")
-        return {"Text": dialogue}
-    except Exception as e:
-        print(f"Erro a gerar introdução: {e}")
-        return {"Text": ""}
-    
 
 if __name__ == "__main__":
     print("A iniciar o servidor FastAPI...")
